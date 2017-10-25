@@ -6,6 +6,10 @@ package com.jornco.controller.util;
 
 public class RobotUtils {
 
+    public static int getRandom(int min, int max) {
+        return (int) Math.floor(Math.random() * (max - min)) + min;
+    }
+
     private static int getRandom() {
         return (int) Math.floor(Math.random() * 255);
     }

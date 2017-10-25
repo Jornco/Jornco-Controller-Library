@@ -103,7 +103,7 @@ public class BLE extends BluetoothGattCallback {
         if (status == BluetoothGatt.GATT_SUCCESS) {
             mCurrentStrategy.writeSuccess();
         } else {
-            mConnectedStrategy.writeFailure();
+            mCurrentStrategy.writeFailure();
         }
     }
 
@@ -158,7 +158,7 @@ public class BLE extends BluetoothGattCallback {
     }
 
     public void writeData(String data, IronbotWriterCallback callback) {
-        mConnectedStrategy.write(data, callback);
+        mCurrentStrategy.write(data, callback);
     }
 
     public void send(String cmd) {
@@ -219,16 +219,18 @@ class ConnectedWriterStrategy implements IWriterStrategy{
 
     @Override
     public void write(String data, IronbotWriterCallback callback) {
+        BLELog.log("对地址: " + address + " 发送: " + data);
         if(TextUtils.isEmpty(data) || (data.length() > MOST_WRITE_LENGTH)){
-            callback.writerFailure(new BLEWriterError(address, data, "发送数据不能大于20个字符长度或者小于0"));
+            callback.writerFailure(address, data, new BLEWriterError(address, data, "发送数据不能大于20个字符长度或者小于0"));
             return;
         }
         synchronized (this){
+            BLELog.log("发送下一个");
             if((mGatt == null) || (mWriterBGC == null)){
-                callback.writerFailure(new BLEWriterError(address, data, "当前设备可能已经断开"));
+                callback.writerFailure(address, data, new BLEWriterError(address, data, "当前设备可能已经断开"));
                 return;
             } else if (mCallback != null) {
-                callback.writerFailure(new BLEWriterError(address, data, "发送太快或者没做好同步, 上一个指令还未发送成功回调"));
+                callback.writerFailure(address, data, new BLEWriterError(address, data, "发送太快或者没做好同步, 上一个指令还未发送成功回调"));
             }
             mCallback = callback;
         }
@@ -240,9 +242,12 @@ class ConnectedWriterStrategy implements IWriterStrategy{
     public void writeSuccess() {
         synchronized (this){
             if(mCallback != null) {
-                mCallback.writerSuccess();
+                IronbotWriterCallback tmp = this.mCallback;
+                mCallback = null;
+                tmp.writerSuccess();
             }
-            mCallback = null;
+//            BLELog.log("发送完毕准备值为null");
+//            mCallback = null;
         }
     }
 
@@ -254,9 +259,11 @@ class ConnectedWriterStrategy implements IWriterStrategy{
                 if (mWriterBGC != null) {
                     data = new String(mWriterBGC.getValue());
                 }
-                mCallback.writerFailure(new BLEWriterError(address, data, "发送出现异常"));
+                IronbotWriterCallback tmp = this.mCallback;
+                mCallback = null;
+                tmp.writerFailure(address, data, new BLEWriterError(address, data, "发送出现异常"));
             }
-            mCallback = null;
+//            mCallback = null;
         }
     }
 
@@ -272,7 +279,7 @@ class ConnectedWriterStrategy implements IWriterStrategy{
             mWriterBGC = null;
             mGatt = null;
             if(mCallback != null){
-                mCallback.writerFailure(new BLEWriterError(address, "", "当前设备断开"));
+                mCallback.writerFailure(address, "", new BLEWriterError(address, "", "当前设备断开"));
             }
             mCallback = null;
         }
@@ -289,7 +296,7 @@ class DisconnectedWriterStrategy implements IWriterStrategy{
 
     @Override
     public void write(String data, IronbotWriterCallback callback) {
-        callback.writerFailure(new BLEWriterError(address, data, "当前设备已断开"));
+        callback.writerFailure(address, data, new BLEWriterError(address, data, "当前设备已断开"));
     }
 
     @Override

@@ -53,7 +53,7 @@ class BLEPool implements OnBLEDeviceStateChangeListener {
     void sendMsg(String address, String cmd, IronbotWriterCallback callback) {
         BLE device = connectedBLE.get(address);
         if (device == null) {
-            callback.writerFailure(new BLEWriterError(address, cmd, "该设备未连接"));
+            callback.writerFailure(address, cmd, new BLEWriterError(address, cmd, "该设备未连接"));
             return;
         }
         device.writeData(cmd, callback);
