@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void sendRandom() {
-        IronbotController.getInstance().sendMsg(createRandom(), new OnIronbotWriteCallback() {
+        new IronbotController().sendMsg(createRandom(), new OnIronbotWriteCallback() {
             @Override
             public void onWriterSuccess(String address) {
                 BLELog.log("发送成功: " + address);

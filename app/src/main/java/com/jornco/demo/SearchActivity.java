@@ -35,7 +35,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         initView();
-        status = new IronbotStatus();
+        status = new MyIronbotStatus();
     }
 
     private void initView() {
@@ -81,7 +81,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
         items.add(info);
-        mAdapter.notifyDataSetChanged();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

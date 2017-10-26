@@ -129,7 +129,7 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
                     IronbotCode code = new IronbotCode.Builder()
                             .addColor(RobotUtils.getRandom(0, 255), RobotUtils.getRandom(0, 255), RobotUtils.getRandom(0, 255))
                             .build();
-                    IronbotController.getInstance().sendMsg(address, code, new OnIronbotWriteCallback() {
+                    new IronbotController().sendMsg(address, code, new OnIronbotWriteCallback() {
                         @Override
                         public void onWriterSuccess(String address) {
                             BLELog.log("发送成功: " + address);
