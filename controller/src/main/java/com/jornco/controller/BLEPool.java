@@ -1,13 +1,18 @@
 package com.jornco.controller;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.receiver.BLEMessage;
 import com.jornco.controller.receiver.BLEReceiver;
+import com.jornco.controller.scan.IronbotFilter;
+import com.jornco.controller.scan.IronbotSearcherCallback;
 import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,23 +25,45 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Created by kkopite on 2017/10/25.
  */
 
-class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.OnSendListener{
+class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.OnSendListener, BluetoothAdapter.LeScanCallback{
+
+    private IronbotFilter mFilter;
 
     private static class Holder {
         private static BLEPool INSTANCE = new BLEPool();
     }
 
-    private BLEPool(){}
+    private BLEPool(){
+        mAdapter = BluetoothAdapter.getDefaultAdapter();
+    }
 
     static BLEPool getInstance() {
         return Holder.INSTANCE;
     }
 
+    private IronbotRule mRule = new IronbotRule() {
+
+        final static String VERSION1_UUID_WRITER = "0000ffe9";
+        final static String VERSION1_UUID_READ = "0000ffe1";
+
+        final static String VERSION2_UUID_WRITER = "0000fff1";
+        final static String VERSION2_UUID_READ = "0000fff4";
+
+        @Override
+        public boolean isRead(String uuid) {
+            return uuid.startsWith(VERSION1_UUID_READ)
+                    || uuid.startsWith(VERSION2_UUID_READ);
+        }
+
+        @Override
+        public boolean isWrite(String uuid) {
+            return uuid.startsWith(VERSION1_UUID_WRITER)
+                    || uuid.startsWith(VERSION2_UUID_WRITER);
+        }
+    };
+
     // 已连接设备
     private Map<String, BLE> mConnectedBLE = new HashMap<>();
-
-    // 上层扫描组件需要的设备状态回调
-    private OnBLEDeviceStatusChangeListener mListener;
 
     // 接受消息处理回调
     private CopyOnWriteArraySet<BLEReceiver> mReceivers = new CopyOnWriteArraySet<>();
@@ -52,11 +79,11 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     /**
      * 连接
      * @param context   上下文
-     * @param info      一个蓝牙设备
-     * @param listener  监听器
+     * @param address   地址
      */
-    void connect(Context context, BLE info, OnBLEDeviceStatusChangeListener listener) {
-        mListener = listener;
+    void connect(Context context, String address) {
+        BluetoothDevice device = mAdapter.getRemoteDevice(address);
+        BLE info = new BLE(address, device.getName(), device, mRule);
         mConnectedBLE.put(info.getAddress(), info);
         info.connect(context, this);
     }
@@ -102,11 +129,6 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      */
     void unRegisterReceiver(BLEReceiver receiver) {
         mReceivers.remove(receiver);
-    }
-
-    @Override
-    public void bleDeviceStateChange(String address, BLEState state) {
-        mListener.bleDeviceStateChange(address, state);
     }
 
     @Override
@@ -234,6 +256,101 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
         // 完成的回调
         private IronbotWriterCallback callback;
 
+    }
+
+    // 蓝牙适配器
+    private BluetoothAdapter mAdapter;
+
+    // 扫描蓝牙回调
+    private IronbotSearcherCallback mCallback;
+
+    // 蓝牙设备连接状态回调
+    private CopyOnWriteArraySet<OnBLEDeviceStatusChangeListener> mDeviceStatusChangeListeners = new CopyOnWriteArraySet<>();
+
+    /**
+     * 扫描设备
+     * @param callback 扫描设备的回调
+     */
+    public void searchIronbot(IronbotSearcherCallback callback, IronbotFilter filter) {
+        if (mAdapter == null || !mAdapter.isEnabled()) {
+            BLELog.log("蓝牙不可用");
+            return;
+        }
+        mFilter = filter;
+        this.mCallback = callback;
+        mAdapter.startLeScan(this);
+    }
+
+    /**
+     * 停止扫描
+     */
+    public void stopScan(){
+        mAdapter.stopLeScan(this);
+        mCallback = null;
+    }
+
+    /**
+     * 获取当前已连接的蓝牙设备
+     * @return List<IronbotInfo>
+     */
+    public List<IronbotInfo> getConnectedIronbot(){
+        Map<String, BLE> ble = BLEPool.getInstance().getConnectedBLE();
+        List<IronbotInfo> infos = new ArrayList<>();
+        for (BLE info : ble.values()) {
+            String name = info.getName();
+            String address = info.getAddress();
+            infos.add(new IronbotInfo(name, address, BLEState.CONNECTED));
+        }
+        return infos;
+    }
+
+    /**
+     * 蓝牙是否可用
+     * @return true if bluetooth is enabled
+     */
+    public boolean isEnable(){
+        return mAdapter != null && mAdapter.isEnabled();
+    }
+
+    /**
+     * 打开蓝牙
+     */
+    public void enable() {
+        if (mAdapter != null) {
+            mAdapter.enable();
+        }
+    }
+
+    /**
+     * 添加蓝牙设备连接断开状态的监听
+     * @param listener 监听器
+     */
+    public void addOnBLEDeviceStatusChangeListener(OnBLEDeviceStatusChangeListener listener) {
+        mDeviceStatusChangeListeners.add(listener);
+    }
+
+    /**
+     * 取消蓝牙设备连接断开状态的监听
+     * @param listener 监听器
+     */
+    public void removeOnBLEDeviceStatusChangeListener(OnBLEDeviceStatusChangeListener listener) {
+        mDeviceStatusChangeListeners.remove(listener);
+    }
+
+    @Override
+    public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+        if (mFilter.filter(device)) {
+            String address = device.getAddress();
+            String name = device.getName();
+            mCallback.onIronbotFound(new IronbotInfo(name, address));
+        }
+    }
+
+    @Override
+    public void bleDeviceStateChange(String address, BLEState state) {
+        for (OnBLEDeviceStatusChangeListener mDeviceStatusChangeListener : mDeviceStatusChangeListeners) {
+            mDeviceStatusChangeListener.bleDeviceStateChange(address, state);
+        }
     }
 }
 

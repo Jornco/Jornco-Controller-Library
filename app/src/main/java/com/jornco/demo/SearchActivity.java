@@ -29,11 +29,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private Button mBtnStop;
 
     private IronbotStatus status;
+    private IronbotSearcher mSearcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        mSearcher = new IronbotSearcher();
         initView();
         status = new MyIronbotStatus();
     }
@@ -46,9 +48,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         mBtnScan.setOnClickListener(this);
         mBtnStop.setOnClickListener(this);
 
-        items = IronbotSearcher.getInstance().getConnectedIronbot();
+        items = mSearcher.getConnectedIronbot();
 
-        mAdapter = new RobotInfoAdapter(this, items);
+        mAdapter = new RobotInfoAdapter(this, items, mSearcher);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
@@ -58,14 +60,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_scan:
-                if (IronbotSearcher.getInstance().isEnable()) {
-                    IronbotSearcher.getInstance().searchIronbot(this);
+                if (mSearcher.isEnable()) {
+                    mSearcher.searchIronbot(this);
                 } else {
-                    IronbotSearcher.getInstance().enable();
+                    mSearcher.enable();
                 }
                 break;
             case R.id.btn_stop:
-                IronbotSearcher.getInstance().stopScan();
+                mSearcher.stopScan();
                 break;
         }
     }
@@ -101,7 +103,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         super.onStop();
         mAdapter.onStop();
         status.onDestroy();
-        IronbotSearcher.getInstance().stopScan();
+        mSearcher.stopScan();
     }
 
     class MyIronbotStatus extends IronbotStatus {

@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mBtnSendRandom;
 
     private ExecutorService service = Executors.newFixedThreadPool(5);
+    private IronbotController controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initView();
         initPermission();
-
+        controller = new IronbotController();
     }
 
     private void initPermission() {
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void sendRandom() {
-        new IronbotController().sendMsg(createRandom(), new OnIronbotWriteCallback() {
+        controller.sendMsg(createRandom(), new OnIronbotWriteCallback() {
             @Override
             public void onWriterSuccess(String address) {
                 BLELog.log("发送成功: " + address);

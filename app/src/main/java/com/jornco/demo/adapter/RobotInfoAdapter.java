@@ -30,10 +30,12 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
 
     private Activity context;
     private List<IronbotInfo> mItems;
+    private IronbotSearcher mSearcher;
 
-    public RobotInfoAdapter(Activity context, List<IronbotInfo> mItems) {
+    public RobotInfoAdapter(Activity context, List<IronbotInfo> mItems, IronbotSearcher searcher) {
         this.context = context;
         this.mItems = mItems;
+        mSearcher = searcher;
     }
 
     @Override
@@ -54,11 +56,11 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
     }
 
     public void onStart() {
-        IronbotSearcher.getInstance().addOnBLEDeviceStatusChangeListener(this);
+        mSearcher.addOnBLEDeviceStatusChangeListener(this);
     }
 
     public void onStop() {
-        IronbotSearcher.getInstance().removeOnBLEDeviceStatusChangeListener(this);
+        mSearcher.removeOnBLEDeviceStatusChangeListener(this);
     }
 
     @Override
@@ -83,7 +85,7 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
         }
     }
 
-    public static class VH extends RecyclerView.ViewHolder {
+    public class VH extends RecyclerView.ViewHolder {
 
         public TextView mTvName;
         public TextView mTvAddress;
@@ -116,9 +118,9 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
                 public void onClick(View v) {
                     BLEState state = info.getState();
                     if (state == BLEState.DISCONNECT) {
-                        IronbotSearcher.getInstance().connect(itemView.getContext(), address);
+                        mSearcher.connect(itemView.getContext(), address);
                     } else {
-                        IronbotSearcher.getInstance().disConnect(address);
+                        mSearcher.disConnect(address);
                     }
                 }
             });
