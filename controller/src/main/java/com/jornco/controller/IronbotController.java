@@ -18,32 +18,54 @@ public class IronbotController implements MultiIronbotWriterCallback.OnSendListe
         private static IronbotController INSTANCE = new IronbotController();
     }
 
-    private IronbotController() {
-    }
+    private IronbotController() {}
 
     public static IronbotController getInstance() {
         return Holder.INSTANCE;
     }
 
+    /**
+     * 当前是否在发送
+     */
     private volatile boolean isWriting = false;
 
+    /**
+     * 待发送的消息队列
+     */
     private ConcurrentLinkedQueue<WriteData> queueDatas = new ConcurrentLinkedQueue<>();
 
+    /**
+     * 给所有当前连接的设备发指令
+     * @param code      指令
+     * @param callback  回调
+     */
     public void sendMsg(IronbotCode code, OnIronbotWriteCallback callback) {
         Set<String> address = BLEPool.getInstance().getConnectedBLE().keySet();
         String[] strings = address.toArray(new String[address.size()]);
         sendMsg(strings, code, callback);
     }
 
+    /**
+     * 该指定设备发送指令
+     * @param address   地址
+     * @param code      指令
+     * @param callback  回调
+     */
     public void sendMsg(String address, IronbotCode code, OnIronbotWriteCallback callback) {
         sendMsg(new String[]{address}, code, callback);
     }
 
+    /**
+     * 给指定的设备发送指令
+     * @param address   地址
+     * @param code      指令
+     * @param callback  回调
+     */
     public void sendMsg(String[] address, final IronbotCode code, final OnIronbotWriteCallback callback) {
         List<String> codes = code.getCodes();
         int size = address.length;
         if (size == 0 && callback != null) {
-            callback.onWriterFailure("", new BLEWriterError("", "", "当前没有连接的设备"));
+            callback.onWriterFailure("", new BLEWriterError("", "", "没有要发送的设备地址或者没有连接的设备"));
             callback.onAllDeviceFailure();
             callback.onWriterEnd();
             return;
@@ -55,7 +77,7 @@ public class IronbotController implements MultiIronbotWriterCallback.OnSendListe
                 data.address = address;
                 data.data = codes.get(i);
                 if (i == length - 1) {
-                    // 分割的最后一条指令才会去回调上面提供的回调
+                    // 分割的最后一条指令发完才算这条指令发送完毕, 才会去执行用户传进来的回调
                     data.callback = new MultiIronbotWriterCallback(callback, this, size);
                 } else {
                     data.callback = new MultiIronbotWriterCallback(null, this, size);
@@ -77,6 +99,9 @@ public class IronbotController implements MultiIronbotWriterCallback.OnSendListe
 
     }
 
+    /**
+     * 尝试从发送队列拉出一个指令来发送
+     */
     private void next() {
         synchronized (this) {
             if (isWriting) {
@@ -99,6 +124,12 @@ public class IronbotController implements MultiIronbotWriterCallback.OnSendListe
         }
     }
 
+    /**
+     * 给指定地址发送指令
+     * @param address   地址
+     * @param data      指令
+     * @param callback  回调
+     */
     private void sendMsg(String address, String data, final IronbotWriterCallback callback) {
         BLEPool.getInstance().sendMsg(address, data, callback);
     }

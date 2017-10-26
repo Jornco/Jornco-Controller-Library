@@ -6,7 +6,7 @@ import android.content.Context;
 
 import com.jornco.controller.scan.IronbotFilter;
 import com.jornco.controller.scan.IronbotSearcherCallback;
-import com.jornco.controller.scan.OnBLEDeviceStateChangeListener;
+import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Created by kkopite on 2017/10/25.
  */
 
-public class IronbotSearcher implements BluetoothAdapter.LeScanCallback, OnBLEDeviceStateChangeListener {
+public class IronbotSearcher implements BluetoothAdapter.LeScanCallback, OnBLEDeviceStatusChangeListener {
 
     private static class Holder {
         private static IronbotSearcher INSTANCE = new IronbotSearcher();
@@ -70,7 +70,7 @@ public class IronbotSearcher implements BluetoothAdapter.LeScanCallback, OnBLEDe
     private IronbotSearcherCallback mCallback;
 
     // 蓝牙设备连接状态回调
-    private CopyOnWriteArraySet<OnBLEDeviceStateChangeListener> mDeviceStateChangeListeners = new CopyOnWriteArraySet<>();
+    private CopyOnWriteArraySet<OnBLEDeviceStatusChangeListener> mDeviceStatusChangeListeners = new CopyOnWriteArraySet<>();
 
     /**
      * 扫描设备
@@ -144,12 +144,20 @@ public class IronbotSearcher implements BluetoothAdapter.LeScanCallback, OnBLEDe
         BLEPool.getInstance().disConnect(address);
     }
 
-    public void addOnBLEDeviceStateChangeListener(OnBLEDeviceStateChangeListener listener) {
-        mDeviceStateChangeListeners.add(listener);
+    /**
+     * 添加蓝牙设备连接断开状态的监听
+     * @param listener 监听器
+     */
+    public void addOnBLEDeviceStatusChangeListener(OnBLEDeviceStatusChangeListener listener) {
+        mDeviceStatusChangeListeners.add(listener);
     }
 
-    public void removeOnBLEDeviceStateChangeListener(OnBLEDeviceStateChangeListener listener) {
-        mDeviceStateChangeListeners.remove(listener);
+    /**
+     * 取消蓝牙设备连接断开状态的监听
+     * @param listener 监听器
+     */
+    public void removeOnBLEDeviceStatusChangeListener(OnBLEDeviceStatusChangeListener listener) {
+        mDeviceStatusChangeListeners.remove(listener);
     }
 
     @Override
@@ -163,10 +171,8 @@ public class IronbotSearcher implements BluetoothAdapter.LeScanCallback, OnBLEDe
 
     @Override
     public void bleDeviceStateChange(String address, BLEState state) {
-        for (OnBLEDeviceStateChangeListener mDeviceStateChangeListener : mDeviceStateChangeListeners) {
-            mDeviceStateChangeListener.bleDeviceStateChange(address, state);
+        for (OnBLEDeviceStatusChangeListener mDeviceStatusChangeListener : mDeviceStatusChangeListeners) {
+            mDeviceStatusChangeListener.bleDeviceStateChange(address, state);
         }
     }
-
-
 }

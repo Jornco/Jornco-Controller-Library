@@ -28,7 +28,7 @@ public interface OnIronbotWriteCallback {
     void onAllDeviceFailure();
 
     /**
-     * 对所有地址发送完毕
+     * 对所有地址发送完毕, 至少有一个是发送成功的
      */
     void onWriterEnd();
 

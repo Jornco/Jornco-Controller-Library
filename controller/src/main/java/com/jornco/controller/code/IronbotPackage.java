@@ -11,6 +11,4 @@ public class IronbotPackage {
 
     private IronbotCode code;
 
-    private IronbotWriterCallback callback;
-
 }

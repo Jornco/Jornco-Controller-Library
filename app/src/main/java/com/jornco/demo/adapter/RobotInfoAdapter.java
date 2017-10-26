@@ -15,7 +15,7 @@ import com.jornco.controller.IronbotSearcher;
 import com.jornco.controller.OnIronbotWriteCallback;
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
-import com.jornco.controller.scan.OnBLEDeviceStateChangeListener;
+import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
 import com.jornco.controller.util.RobotUtils;
 import com.jornco.demo.R;
 
@@ -26,7 +26,7 @@ import java.util.List;
  * Created by kkopite on 2017/10/25.
  */
 
-public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> implements OnBLEDeviceStateChangeListener{
+public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> implements OnBLEDeviceStatusChangeListener {
 
     private List<IronbotInfo> mItems;
 
@@ -51,11 +51,11 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
     }
 
     public void onStart(){
-        IronbotSearcher.getInstance().addOnBLEDeviceStateChangeListener(this);
+        IronbotSearcher.getInstance().addOnBLEDeviceStatusChangeListener(this);
     }
 
     public void onStop(){
-        IronbotSearcher.getInstance().removeOnBLEDeviceStateChangeListener(this);
+        IronbotSearcher.getInstance().removeOnBLEDeviceStatusChangeListener(this);
     }
 
     @Override

@@ -10,7 +10,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.jornco.controller.error.BLEWriterError;
-import com.jornco.controller.scan.OnBLEDeviceStateChangeListener;
 
 import java.util.List;
 
@@ -21,24 +20,33 @@ import java.util.List;
 
 class BLE extends BluetoothGattCallback {
 
+    // 地址
     private final String address;
 
+    // 名称
     private final String name;
 
+    // 蓝牙设备
     private BluetoothDevice device;
 
+    // 连接状态
     private BLEState mState;
 
+    // 服务过滤
     private final IronbotRule mRule;
 
     private BluetoothGatt mGatt;
 
     private BluetoothGattCharacteristic mReadBGC;
 
-    private OnBLEDeviceStateChangeListener mDeviceStateChangeListener;
+    // 设备状态变化回调
+    private OnBLEDeviceChangeListener mDeviceStateChangeListener;
 
+    // 连接时读写处理
     private IWriterStrategy mConnectedStrategy;
+    // 断开时读写处理
     private IWriterStrategy mDisconnectedStrategy;
+    // 当前的读写处理
     private IWriterStrategy mCurrentStrategy;
 
     BLE(String address, String name, BluetoothDevice device, IronbotRule rule) {
@@ -63,7 +71,12 @@ class BLE extends BluetoothGattCallback {
         return name;
     }
 
-    void connect(Context context, OnBLEDeviceStateChangeListener bleDeviceStateChangeListener) {
+    /**
+     * 连接
+     * @param context   上下文
+     * @param bleDeviceStateChangeListener 回调
+     */
+    void connect(Context context, OnBLEDeviceChangeListener bleDeviceStateChangeListener) {
         this.mDeviceStateChangeListener = bleDeviceStateChangeListener;
         if (device == null) {
             changeState(BLEState.DISCONNECT);
@@ -111,6 +124,7 @@ class BLE extends BluetoothGattCallback {
         super.onCharacteristicChanged(gatt, characteristic);
         byte[] bytes = mReadBGC.getValue();
         String msg = new String(bytes);
+        mDeviceStateChangeListener.bleDeviceReceive(address, msg);
         BLELog.log("收到设备传来的: " + msg);
     }
 
@@ -138,7 +152,11 @@ class BLE extends BluetoothGattCallback {
             }
         }
     }
-
+    /**
+     * 切换至连接的读写状态
+     * @param gatt gatt
+     * @param bgc  可读的一个属性
+     */
     private void switchWriterToConnect(BluetoothGatt gatt, BluetoothGattCharacteristic bgc){
         synchronized (this){
             mCurrentStrategy.stop();
@@ -148,6 +166,9 @@ class BLE extends BluetoothGattCallback {
         }
     }
 
+    /**
+     * 切换至断开的读写状态
+     */
     private void switchWriterToDisconnect(){
         synchronized (this){
             mCurrentStrategy.stop();
@@ -156,10 +177,18 @@ class BLE extends BluetoothGattCallback {
         }
     }
 
+    /**
+     * 对设备进行读写
+     * @param data      指令
+     * @param callback  回调
+     */
     void writeData(String data, IronbotWriterCallback callback) {
         mCurrentStrategy.write(data, callback);
     }
 
+    /**
+     * 断开连接
+     */
     void disconnect() {
         if (mGatt == null) {
             return;
@@ -167,13 +196,19 @@ class BLE extends BluetoothGattCallback {
         mGatt.disconnect();
     }
 
-
+    /**
+     * 销毁
+     */
     private void destroy() {
         mReadBGC = null;
         mGatt = null;
         mDeviceStateChangeListener = null;
     }
 
+    /**
+     * 连接状态的改变
+     * @param state state
+     */
     private void changeState(BLEState state) {
         mState = state;
         mDeviceStateChangeListener.bleDeviceStateChange(address, state);
@@ -184,7 +219,7 @@ interface IronbotWriterCallback {
 
     /**
      * 发送成功
-     * @param address
+     * @param address 地址
      */
     void writerSuccess(String address);
 
