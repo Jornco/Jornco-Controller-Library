@@ -7,10 +7,9 @@ import com.jornco.controller.receiver.BLEMessage;
 import com.jornco.controller.receiver.BLEReceiver;
 import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * 保存连接设备的类
@@ -36,7 +35,7 @@ class BLEPool implements OnBLEDeviceChangeListener {
     private OnBLEDeviceStatusChangeListener mListener;
 
     // 接受消息处理回调
-    private List<BLEReceiver> mReceivers = new ArrayList<>();
+    private CopyOnWriteArraySet<BLEReceiver> mReceivers = new CopyOnWriteArraySet<>();
 
     /**
      * 返回连接设备的map
@@ -85,6 +84,22 @@ class BLEPool implements OnBLEDeviceChangeListener {
         device.writeData(cmd, callback);
     }
 
+    /**
+     * 注册接受器
+     * @param receiver 接收器
+     */
+    void registerReceiver(BLEReceiver receiver) {
+        mReceivers.add(receiver);
+    }
+
+    /**
+     * 取消订阅
+     * @param receiver 接收器
+     */
+    void unRegisterReceiver(BLEReceiver receiver) {
+        mReceivers.remove(receiver);
+    }
+
     @Override
     public void bleDeviceStateChange(String address, BLEState state) {
         mListener.bleDeviceStateChange(address, state);
@@ -100,6 +115,8 @@ class BLEPool implements OnBLEDeviceChangeListener {
             }
         }
     }
+
+
 }
 
 /**

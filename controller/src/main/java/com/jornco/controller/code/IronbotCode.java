@@ -42,33 +42,33 @@ public class IronbotCode {
         }
 
         public Builder delay(int time) {
-            sb.append("Delayms(").append(time).append(")\t");
+            sb.append("Delayms(").append(time).append(")\n");
             return this;
         }
 
         public Builder ultra(int a) {
-            sb.append("readUltra(").append(a).append(")\t");
+            sb.append("readUltra(").append(a).append(")\n");
             return this;
         }
 
         public Builder readTemp(int a) {
-            sb.append("readTemp(").append(a).append(")\t");
+            sb.append("readTemp(").append(a).append(")\n");
             return this;
         }
 
         public Builder readHumi(int a) {
-            sb.append("readHumi(").append(a).append(")\t");
+            sb.append("readHumi(").append(a).append(")\n");
             return this;
         }
 
         public Builder tubeAll(int a, int b) {
-            sb.append("tube_all(").append(a).append(",").append(b).append(")\t");
+            sb.append("tube_all(").append(a).append(",").append(b).append(")\n");
             return this;
         }
 
         // 具体传的是啥? 0xFFAAFF 这种
         public Builder Led(int a, int r, int g, int b) {
-            sb.append("Led(").append(a).append(")\t");
+            sb.append("Led(").append(a).append(")\n");
             return this;
         }
 
@@ -76,27 +76,27 @@ public class IronbotCode {
             if (b != 0 && b!= 1) {
                 throw new IllegalArgumentException("b 值只能为 1 或 0 ");
             }
-            sb.append("Key(").append(a).append(",").append(b).append(")\t");
+            sb.append("Key(").append(a).append(",").append(b).append(")\n");
             return this;
         }
 
         public Builder UartSend(char a) {
-            sb.append("UartSend(").append(a).append(")\t");
+            sb.append("UartSend(").append(a).append(")\n");
             return this;
         }
 
         public Builder UartRec(char a) {
-            sb.append("UartRec(").append(a).append(")\t");
+            sb.append("UartRec(").append(a).append(")\n");
             return this;
         }
 
         public Builder PWM(int num, int time) {
-            sb.append("PWM").append(num).append("(").append(time).append(")\t");
+            sb.append("PWM").append(num).append("(").append(time).append(")\n");
             return this;
         }
 
         public IronbotCode create() {
-            sb.insert(0, "--\t").append("--");
+            sb.insert(0, "--\n").append("--");
             String msg = sb.toString();
             IronbotCode code = new IronbotCode();
             code.codes = sqlit(msg);

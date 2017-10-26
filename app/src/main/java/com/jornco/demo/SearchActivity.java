@@ -8,8 +8,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.jornco.controller.BLELog;
 import com.jornco.controller.IronbotInfo;
 import com.jornco.controller.IronbotSearcher;
+import com.jornco.controller.IronbotStatus;
+import com.jornco.controller.receiver.BLEMessage;
 import com.jornco.controller.scan.IronbotSearcherCallback;
 import com.jornco.demo.adapter.RobotInfoAdapter;
 
@@ -25,11 +28,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private Button mBtnScan;
     private Button mBtnStop;
 
+    private IronbotStatus status;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         initView();
+        status = new IronbotStatus();
     }
 
     private void initView() {
@@ -42,7 +48,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         items = IronbotSearcher.getInstance().getConnectedIronbot();
 
-        mAdapter = new RobotInfoAdapter(items);
+        mAdapter = new RobotInfoAdapter(this, items);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
@@ -82,12 +88,23 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     protected void onStart() {
         super.onStart();
         mAdapter.onStart();
+        status.onStart();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         mAdapter.onStop();
+        status.onDestroy();
         IronbotSearcher.getInstance().stopScan();
+    }
+
+    class MyIronbotStatus extends IronbotStatus {
+
+        @Override
+        public boolean onReceiveMessage(BLEMessage message) {
+            BLELog.log("接收到来自外围设备发来的信息: " + message.getMsg());
+            return true;
+        }
     }
 }

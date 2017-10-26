@@ -1,5 +1,6 @@
 package com.jornco.demo.adapter;
 
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,15 +23,16 @@ import com.jornco.demo.R;
 import java.util.List;
 
 /**
- *
  * Created by kkopite on 2017/10/25.
  */
 
 public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> implements OnBLEDeviceStatusChangeListener {
 
+    private Activity context;
     private List<IronbotInfo> mItems;
 
-    public RobotInfoAdapter(List<IronbotInfo> mItems) {
+    public RobotInfoAdapter(Activity context, List<IronbotInfo> mItems) {
+        this.context = context;
         this.mItems = mItems;
     }
 
@@ -40,9 +42,10 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
     }
 
     @Override
-    public void onBindViewHolder(VH holder, int position) {
-        IronbotInfo info = mItems.get(position);
+    public void onBindViewHolder(final VH holder, int position) {
+        final IronbotInfo info = mItems.get(position);
         holder.bind(info);
+
     }
 
     @Override
@@ -50,11 +53,11 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
         return mItems == null ? 0 : mItems.size();
     }
 
-    public void onStart(){
+    public void onStart() {
         IronbotSearcher.getInstance().addOnBLEDeviceStatusChangeListener(this);
     }
 
-    public void onStop(){
+    public void onStop() {
         IronbotSearcher.getInstance().removeOnBLEDeviceStatusChangeListener(this);
     }
 
@@ -63,11 +66,18 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
         if (address == null) {
             return;
         }
+        BLELog.log("接收到变化: " + address + ", " + state);
         for (int i = 0; i < mItems.size(); i++) {
             IronbotInfo info = mItems.get(i);
             if (address.equals(info.getAddress())) {
                 info.setState(state);
-                notifyItemChanged(i);
+                final int finalI = i;
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyItemChanged(finalI);
+                    }
+                });
                 break;
             }
         }

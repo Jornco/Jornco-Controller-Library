@@ -6,5 +6,8 @@ package com.jornco.controller.receiver;
  */
 
 public interface BLEReceiver {
+
+    // 检查是否是需要的信息
     boolean onReceiveMessage(BLEMessage message);
+
 }
