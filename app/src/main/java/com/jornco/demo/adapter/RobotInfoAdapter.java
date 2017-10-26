@@ -7,10 +7,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.jornco.controller.BLELog;
 import com.jornco.controller.BLEState;
 import com.jornco.controller.IronbotController;
 import com.jornco.controller.IronbotInfo;
 import com.jornco.controller.IronbotSearcher;
+import com.jornco.controller.OnIronbotWriteCallback;
+import com.jornco.controller.code.IronbotCode;
+import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.scan.OnBLEDeviceStateChangeListener;
 import com.jornco.controller.util.RobotUtils;
 import com.jornco.demo.R;
@@ -112,7 +116,30 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    IronbotController.getInstance().sendMsg(address, RobotUtils.getCmd());
+                    IronbotCode code = new IronbotCode.Builder()
+                            .addColor(RobotUtils.getRandom(0, 255), RobotUtils.getRandom(0, 255), RobotUtils.getRandom(0, 255))
+                            .build();
+                    IronbotController.getInstance().sendMsg(address, code, new OnIronbotWriteCallback() {
+                        @Override
+                        public void onWriterSuccess(String address) {
+                            BLELog.log("发送成功: " + address);
+                        }
+
+                        @Override
+                        public void onWriterFailure(String address, BLEWriterError error) {
+                            BLELog.log("发送失败: " + error.getMessage());
+                        }
+
+                        @Override
+                        public void onAllDeviceFailure() {
+                            BLELog.log("都发送失败");
+                        }
+
+                        @Override
+                        public void onWriterEnd() {
+                            BLELog.log("指令已发给所有设备");
+                        }
+                    });
                 }
             });
         }

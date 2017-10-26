@@ -1,8 +1,6 @@
 package com.jornco.controller;
 
 import com.jornco.controller.code.IronbotCode;
-import com.jornco.controller.code.IronbotWriterCallback;
-import com.jornco.controller.code.MulIronbotWriterCallback;
 import com.jornco.controller.error.BLEWriterError;
 
 import java.util.List;
@@ -14,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Created by kkopite on 2017/10/25.
  */
 
-public class IronbotController implements MulIronbotWriterCallback.OnSendListener{
+public class IronbotController implements MultiIronbotWriterCallback.OnSendListener{
 
     private static class Holder {
         private static IronbotController INSTANCE = new IronbotController();
@@ -31,34 +29,39 @@ public class IronbotController implements MulIronbotWriterCallback.OnSendListene
 
     private ConcurrentLinkedQueue<WriteData> queueDatas = new ConcurrentLinkedQueue<>();
 
-    public void sendMsg(IronbotCode code, OnIronbotWriterCallback callback) {
+    public void sendMsg(IronbotCode code, OnIronbotWriteCallback callback) {
         Set<String> address = BLEPool.getInstance().getConnectedBLE().keySet();
         String[] strings = address.toArray(new String[address.size()]);
         sendMsg(strings, code, callback);
     }
 
-    public void sendMsg(String address, IronbotCode code, OnIronbotWriterCallback callback) {
+    public void sendMsg(String address, IronbotCode code, OnIronbotWriteCallback callback) {
         sendMsg(new String[]{address}, code, callback);
     }
 
-    public void sendMsg(String[] address, final IronbotCode code, final OnIronbotWriterCallback callback) {
+    public void sendMsg(String[] address, final IronbotCode code, final OnIronbotWriteCallback callback) {
         List<String> codes = code.getCodes();
         int size = address.length;
-        if (size == 0) {
-            callback.writerFailure("", "", new BLEWriterError("", "", "当前没有连接的设备"));
+        if (size == 0 && callback != null) {
+            callback.onWriterFailure("", new BLEWriterError("", "", "当前没有连接的设备"));
+            callback.onAllDeviceFailure();
+            callback.onWriterEnd();
             return;
         }
-        for (int i = 0, length = codes.size(); i < length; i++) {
-            WriteData data = new WriteData();
-            data.address = address;
-            data.data = codes.get(i);
-            if (i == length - 1) {
-                // 分割的最后一条指令才会去回调上面提供的回调
-                data.callback = new MulIronbotWriterCallback(callback, this, size);
-            } else {
-                data.callback = new MulIronbotWriterCallback(null, this, size);
+        // 确保一条完整的指令
+        synchronized (this) {
+            for (int i = 0, length = codes.size(); i < length; i++) {
+                WriteData data = new WriteData();
+                data.address = address;
+                data.data = codes.get(i);
+                if (i == length - 1) {
+                    // 分割的最后一条指令才会去回调上面提供的回调
+                    data.callback = new MultiIronbotWriterCallback(callback, this, size);
+                } else {
+                    data.callback = new MultiIronbotWriterCallback(null, this, size);
+                }
+                queueDatas.add(data);
             }
-            queueDatas.add(data);
         }
         next();
     }
@@ -77,6 +80,7 @@ public class IronbotController implements MulIronbotWriterCallback.OnSendListene
     private void next() {
         synchronized (this) {
             if (isWriting) {
+                BLELog.log("当前有任务还在执行, 队列中还有" + queueDatas.size() + "个任务");
                 return;
             }
             isWriting = true;
@@ -99,26 +103,10 @@ public class IronbotController implements MulIronbotWriterCallback.OnSendListene
         BLEPool.getInstance().sendMsg(address, data, callback);
     }
 
-
-    public void sendMsg(final String address, final String cmd) {
-        BLEPool.getInstance().sendMsg(address, cmd, new IronbotWriterCallback() {
-            @Override
-            public void writerSuccess() {
-                BLELog.log("发送完美成功哟: " + address + ": " + cmd);
-            }
-
-            @Override
-            public void writerFailure(String address, String data, BLEWriterError error) {
-                BLELog.log(error.getMessage());
-            }
-
-        });
-    }
-
     /**
      * 携带传输数据的类
      */
-    public static class WriteData {
+    private static class WriteData {
 
         // 要发的数据
         private String data;
@@ -131,11 +119,4 @@ public class IronbotController implements MulIronbotWriterCallback.OnSendListene
 
     }
 
-    public interface OnIronbotWriterCallback extends IronbotWriterCallback {
-
-        /**
-         * 所有设备发送失败
-         */
-        void onAllDeviceFailure();
-    }
 }

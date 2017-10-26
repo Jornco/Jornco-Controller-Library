@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import com.jornco.controller.BLELog;
 import com.jornco.controller.IronbotController;
+import com.jornco.controller.OnIronbotWriteCallback;
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.util.RobotUtils;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initView();
         initPermission();
+
     }
 
     private void initPermission() {
@@ -79,20 +81,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void sendRandom() {
-        IronbotController.getInstance().sendMsg(createRandom(), new IronbotController.OnIronbotWriterCallback() {
+        IronbotController.getInstance().sendMsg(createRandom(), new OnIronbotWriteCallback() {
+            @Override
+            public void onWriterSuccess(String address) {
+                BLELog.log("发送成功: " + address);
+            }
+
+            @Override
+            public void onWriterFailure(String address, BLEWriterError error) {
+                BLELog.log("发送失败: " + error.getMessage());
+            }
+
             @Override
             public void onAllDeviceFailure() {
-                BLELog.log("全部发送失败");
+                BLELog.log("都发送失败");
             }
 
             @Override
-            public void writerSuccess() {
-                BLELog.log("一套动作发送完毕" + System.currentTimeMillis());
-            }
-
-            @Override
-            public void writerFailure(String address, String data, BLEWriterError error) {
-                BLELog.log(error.getMessage());
+            public void onWriterEnd() {
+                BLELog.log("指令已发给所有设备");
             }
         });
     }

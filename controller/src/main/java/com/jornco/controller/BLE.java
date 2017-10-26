@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.jornco.controller.code.IronbotWriterCallback;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.scan.OnBLEDeviceStateChangeListener;
 
@@ -20,7 +19,7 @@ import java.util.List;
  * Created by kkopite on 2017/10/25.
  */
 
-public class BLE extends BluetoothGattCallback {
+class BLE extends BluetoothGattCallback {
 
     private final String address;
 
@@ -35,7 +34,6 @@ public class BLE extends BluetoothGattCallback {
     private BluetoothGatt mGatt;
 
     private BluetoothGattCharacteristic mReadBGC;
-    private BluetoothGattCharacteristic mWriterBGC;
 
     private OnBLEDeviceStateChangeListener mDeviceStateChangeListener;
 
@@ -43,7 +41,7 @@ public class BLE extends BluetoothGattCallback {
     private IWriterStrategy mDisconnectedStrategy;
     private IWriterStrategy mCurrentStrategy;
 
-    public BLE(String address, String name, BluetoothDevice device, IronbotRule rule) {
+    BLE(String address, String name, BluetoothDevice device, IronbotRule rule) {
         this.address = address;
         this.name = name;
         this.device = device;
@@ -65,7 +63,7 @@ public class BLE extends BluetoothGattCallback {
         return name;
     }
 
-    public void connect(Context context, OnBLEDeviceStateChangeListener bleDeviceStateChangeListener) {
+    void connect(Context context, OnBLEDeviceStateChangeListener bleDeviceStateChangeListener) {
         this.mDeviceStateChangeListener = bleDeviceStateChangeListener;
         if (device == null) {
             changeState(BLEState.DISCONNECT);
@@ -103,6 +101,7 @@ public class BLE extends BluetoothGattCallback {
         if (status == BluetoothGatt.GATT_SUCCESS) {
             mCurrentStrategy.writeSuccess();
         } else {
+            BLELog.log("错误代码: " + status);
             mCurrentStrategy.writeFailure();
         }
     }
@@ -157,25 +156,11 @@ public class BLE extends BluetoothGattCallback {
         }
     }
 
-    public void writeData(String data, IronbotWriterCallback callback) {
+    void writeData(String data, IronbotWriterCallback callback) {
         mCurrentStrategy.write(data, callback);
     }
 
-    public void send(String cmd) {
-        if (cmd == null || cmd.length() > 20) {
-            BLELog.log("写入数据不可未空或大于20: " + cmd);
-            return;
-        }
-        if (mWriterBGC == null || mGatt == null) {
-            BLELog.log(address + " 写入失败: " + cmd);
-            return;
-        }
-        mWriterBGC.setValue(cmd);
-        mGatt.writeCharacteristic(mWriterBGC);
-
-    }
-
-    public void disconnect() {
+    void disconnect() {
         if (mGatt == null) {
             return;
         }
@@ -185,7 +170,6 @@ public class BLE extends BluetoothGattCallback {
 
     private void destroy() {
         mReadBGC = null;
-        mWriterBGC = null;
         mGatt = null;
         mDeviceStateChangeListener = null;
     }
@@ -194,6 +178,24 @@ public class BLE extends BluetoothGattCallback {
         mState = state;
         mDeviceStateChangeListener.bleDeviceStateChange(address, state);
     }
+}
+
+interface IronbotWriterCallback {
+
+    /**
+     * 发送成功
+     * @param address
+     */
+    void writerSuccess(String address);
+
+    /**
+     * 发送失败
+     * @param address 发送成功的地址
+     * @param data    发送失败的数据
+     * @param error   详情
+     */
+    void writerFailure(String address, String data, BLEWriterError error);
+
 }
 
 interface IWriterStrategy {
@@ -206,14 +208,14 @@ interface IWriterStrategy {
 
 class ConnectedWriterStrategy implements IWriterStrategy{
 
-    public static final int MOST_WRITE_LENGTH = 20;
+    private static final int MOST_WRITE_LENGTH = 20;
 
     private BluetoothGattCharacteristic mWriterBGC;
     private BluetoothGatt mGatt;
     private IronbotWriterCallback mCallback;
     private String address;
 
-    public ConnectedWriterStrategy(String address) {
+    ConnectedWriterStrategy(String address) {
         this.address = address;
     }
 
@@ -244,7 +246,7 @@ class ConnectedWriterStrategy implements IWriterStrategy{
             if(mCallback != null) {
                 IronbotWriterCallback tmp = this.mCallback;
                 mCallback = null;
-                tmp.writerSuccess();
+                tmp.writerSuccess(address);
             }
 //            BLELog.log("发送完毕准备值为null");
 //            mCallback = null;
@@ -290,7 +292,7 @@ class DisconnectedWriterStrategy implements IWriterStrategy{
 
     private String address;
 
-    public DisconnectedWriterStrategy(String address) {
+    DisconnectedWriterStrategy(String address) {
         this.address = address;
     }
 
@@ -319,3 +321,5 @@ class DisconnectedWriterStrategy implements IWriterStrategy{
 
     }
 }
+
+
