@@ -95,6 +95,9 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     void disConnect(String info){
         BLE device = mConnectedBLE.remove(info);
         if (device == null) {
+            for (OnBLEDeviceStatusChangeListener mDeviceStatusChangeListener : mDeviceStatusChangeListeners) {
+                mDeviceStatusChangeListener.bleDeviceStateChange(info, BLEState.DISCONNECT);
+            }
             return;
         }
         device.disconnect();
@@ -294,9 +297,8 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * @return List<IronbotInfo>
      */
     public List<IronbotInfo> getConnectedIronbot(){
-        Map<String, BLE> ble = BLEPool.getInstance().getConnectedBLE();
         List<IronbotInfo> infos = new ArrayList<>();
-        for (BLE info : ble.values()) {
+        for (BLE info : mConnectedBLE.values()) {
             String name = info.getName();
             String address = info.getAddress();
             infos.add(new IronbotInfo(name, address, BLEState.CONNECTED));

@@ -7,9 +7,7 @@ import com.jornco.controller.scan.IronbotFilter;
 import com.jornco.controller.scan.IronbotSearcherCallback;
 import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 扫描蓝牙， 发现已连接蓝牙
@@ -49,14 +47,7 @@ public class IronbotSearcher{
      * @return List<IronbotInfo>
      */
     public List<IronbotInfo> getConnectedIronbot(){
-        Map<String, BLE> ble = BLEPool.getInstance().getConnectedBLE();
-        List<IronbotInfo> infos = new ArrayList<>();
-        for (BLE info : ble.values()) {
-            String name = info.getName();
-            String address = info.getAddress();
-            infos.add(new IronbotInfo(name, address, BLEState.CONNECTED));
-        }
-        return infos;
+        return BLEPool.getInstance().getConnectedIronbot();
     }
 
     /**
