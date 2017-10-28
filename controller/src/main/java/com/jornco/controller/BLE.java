@@ -139,6 +139,7 @@ class BLE extends BluetoothGattCallback {
                 for (BluetoothGattCharacteristic bgc : bgcs) {
                     String uuid = bgc.getUuid().toString();
                     BLELog.log("find BluetoothGattCharacteristic : " + uuid);
+                    BLELog.log(Helper.decodeProperties(bgc).toString());
                     if (mRule.isRead(uuid)) {
                         BLELog.log("getRead BluetoothGattCharacteristic : " + uuid);
                         mReadBGC = bgc;

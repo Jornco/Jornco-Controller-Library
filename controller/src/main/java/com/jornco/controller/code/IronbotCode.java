@@ -1,5 +1,7 @@
 package com.jornco.controller.code;
 
+import android.util.SparseBooleanArray;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,16 +12,28 @@ import java.util.List;
 public class IronbotCode {
 
     private List<String> codes = new ArrayList<>();
+    private String data = "";
+
+    public String getData() {
+        return data;
+    }
 
     public List<String> getCodes() {
         return codes;
     }
 
+    public static IronbotCode create(String code) {
+        IronbotCode ironbotCode = new IronbotCode();
+        ironbotCode.data = code;
+        ironbotCode.codes = sqlit(code);
+        return ironbotCode;
+    }
+
     public static class Builder {
 
-        private StringBuilder sb = new StringBuilder();
+        private SparseBooleanArray hasInitDHT11 = new SparseBooleanArray();
 
-        private boolean hasInitDHT11 = false;
+        private StringBuilder sb = new StringBuilder();
 
         public Builder addColor(int r, int g, int b) {
             sb.append("#B").append(r).append(",").append(g).append(",").append(b).append(",*");
@@ -52,13 +66,24 @@ public class IronbotCode {
         }
 
         public Builder readTemp(int a) {
+            checkInit(a);
             sb.append("readTemp(").append(a).append(")\n");
             return this;
         }
 
         public Builder readHumi(int a) {
+            checkInit(a);
             sb.append("readHumi(").append(a).append(")\n");
             return this;
+        }
+
+        private void checkInit(int a) {
+            boolean b = hasInitDHT11.get(a);
+            if (b) {
+                return;
+            }
+            hasInitDHT11.put(a, true);
+            sb.append("initdht11(").append(a).append(")\n");
         }
 
         public Builder tubeAll(int a, int b) {
@@ -68,12 +93,23 @@ public class IronbotCode {
 
         // 具体传的是啥? 0xFFAAFF 这种
         public Builder Led(int a, int r, int g, int b) {
-            sb.append("Led(").append(a).append(")\n");
+            String r1 = Integer.toHexString(r);
+            String g1 = Integer.toHexString(g);
+            String b1 = Integer.toHexString(b);
+            r1 = r1.length() == 1 ? "0" + r1 : r1;
+            g1 = g1.length() == 1 ? "0" + g1 : g1;
+            b1 = b1.length() == 1 ? "0" + b1 : b1;
+            sb.append("Led(").append(a)
+                    .append(",0x")
+                    .append(r1)
+                    .append(g1)
+                    .append(b1)
+                    .append(")\n");
             return this;
         }
 
         public Builder Key(int a, int b) {
-            if (b != 0 && b!= 1) {
+            if (b != 0 && b != 1) {
                 throw new IllegalArgumentException("b 值只能为 1 或 0 ");
             }
             sb.append("Key(").append(a).append(",").append(b).append(")\n");
@@ -96,10 +132,11 @@ public class IronbotCode {
         }
 
         public IronbotCode create() {
-            sb.insert(0, "--\n").append("--");
+            sb.insert(0, "--\n\n").append("\n--");
             String msg = sb.toString();
             IronbotCode code = new IronbotCode();
             code.codes = sqlit(msg);
+            code.data = msg;
             return code;
         }
 
@@ -107,7 +144,12 @@ public class IronbotCode {
             String msg = sb.toString();
             IronbotCode code = new IronbotCode();
             code.codes = sqlit(msg);
+            code.data = msg;
             return code;
+        }
+
+        public String getMsg(){
+            return sb.toString();
         }
     }
 

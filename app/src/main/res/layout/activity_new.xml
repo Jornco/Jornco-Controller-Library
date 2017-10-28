@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:context="com.jornco.demo.NewActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="时间: " />
+
+            <EditText
+                android:id="@+id/edit_delay_time"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1000" />
+
+            <Button
+                android:id="@+id/btn_add_delay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="添加延时" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="超声波端口:" />
+
+            <EditText
+                android:id="@+id/edit_ultra_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1" />
+
+            <Button
+                android:id="@+id/btn_add_ultra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="超声波" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="温度端口" />
+
+            <EditText
+                android:id="@+id/edit_temp_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1" />
+
+            <Button
+                android:id="@+id/btn_read_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="温度" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="湿度端口" />
+
+            <EditText
+                android:id="@+id/edit_humi_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1" />
+
+            <Button
+                android:id="@+id/btn_add_humi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="湿度" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="数码显示端口" />
+
+            <EditText
+                android:id="@+id/edit_tube_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="数码显示数据" />
+
+            <EditText
+                android:id="@+id/edit_tube_show_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1" />
+
+            <Button
+                android:id="@+id/btn_add_tube"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="数码管显示" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="端口"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/edit_color_num"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="R" />
+
+            <EditText
+                android:id="@+id/old_r"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="100" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="G" />
+
+            <EditText
+                android:id="@+id/old_g"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="200" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="B" />
+
+            <EditText
+                android:id="@+id/old_b"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="128" />
+
+            <Button
+                android:id="@+id/btn_send_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="发送颜色" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="按键端口 " />
+
+            <EditText
+                android:id="@+id/edit_key_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="按键值: " />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/key_values"
+                android:gravity="center_vertical" />
+
+            <Button
+                android:id="@+id/btn_add_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="按键添加" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="传输端口" />
+
+            <EditText
+                android:id="@+id/edit_send_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1" />
+
+            <Button
+                android:id="@+id/btn_send_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="串口传输" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="接收端口" />
+
+            <EditText
+                android:id="@+id/edit_rec_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1" />
+
+
+            <Button
+                android:id="@+id/btn_rec_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="串口接收" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="舵机控制: 编号" />
+
+            <Spinner
+                android:id="@+id/servo_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/servo_nums" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="时间" />
+
+            <EditText
+                android:id="@+id/edit_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1000" />
+
+            <Button
+                android:id="@+id/btn_servo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="舵机控制" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_init"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="初始化" />
+
+            <Button
+                android:id="@+id/btn_generate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="生成Code" />
+
+            <Button
+                android:id="@+id/btn_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="发送" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</ScrollView>
