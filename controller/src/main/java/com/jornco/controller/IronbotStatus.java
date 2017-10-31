@@ -26,7 +26,11 @@ public class IronbotStatus implements BLEReceiver {
 
     @Override
     public boolean onReceiveMessage(BLEMessage message) {
-        BLELog.log("收到信息: " + message.getMsg());
         return true;
+    }
+
+    @Override
+    public void handMessage(BLEMessage message) {
+        BLELog.log("收到信息: " + message.getMsg());
     }
 }

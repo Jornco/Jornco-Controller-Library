@@ -140,7 +140,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
         // 在这里组合出接收到的信息, 发出去
         for (BLEReceiver mReceiver : mReceivers) {
             if (mReceiver.onReceiveMessage(message)) {
-                break;
+                mReceiver.handMessage(message);
             }
         }
     }

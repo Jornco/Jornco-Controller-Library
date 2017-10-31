@@ -112,6 +112,7 @@ class BLE extends BluetoothGattCallback {
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicWrite(gatt, characteristic, status);
         if (status == BluetoothGatt.GATT_SUCCESS) {
+            BLELog.log("写入成功");
             mCurrentStrategy.writeSuccess();
         } else {
             BLELog.log("错误代码: " + status);
@@ -138,12 +139,12 @@ class BLE extends BluetoothGattCallback {
                 List<BluetoothGattCharacteristic> bgcs = bgs.getCharacteristics();
                 for (BluetoothGattCharacteristic bgc : bgcs) {
                     String uuid = bgc.getUuid().toString();
-                    BLELog.log("find BluetoothGattCharacteristic : " + uuid);
-                    BLELog.log(Helper.decodeProperties(bgc).toString());
+                    BLELog.log("find BluetoothGattCharacteristic : " + uuid + ", " + Helper.decodeProperties(bgc).toString());
                     if (mRule.isRead(uuid)) {
                         BLELog.log("getRead BluetoothGattCharacteristic : " + uuid);
                         mReadBGC = bgc;
-                        mGatt.setCharacteristicNotification(mReadBGC, true);
+                        boolean b = mGatt.setCharacteristicNotification(mReadBGC, true);
+                        BLELog.log("监听: " + b);
                     }
                     if (mRule.isWrite(uuid)) {
                         BLELog.log("getWrite BluetoothGattCharacteristic : " + uuid);
@@ -161,7 +162,8 @@ class BLE extends BluetoothGattCallback {
     private void switchWriterToConnect(BluetoothGatt gatt, BluetoothGattCharacteristic bgc){
         synchronized (this){
             mCurrentStrategy.stop();
-            gatt.setCharacteristicNotification(bgc, true);
+            boolean b = gatt.setCharacteristicNotification(bgc, true);
+            BLELog.log("监听: " + b);
             mCurrentStrategy = mConnectedStrategy;
             mCurrentStrategy.start(gatt, bgc);
         }
