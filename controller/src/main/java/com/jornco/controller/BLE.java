@@ -95,7 +95,8 @@ class BLE extends BluetoothGattCallback {
         super.onConnectionStateChange(gatt, status, newState);
         if (newState == BluetoothProfile.STATE_CONNECTED) {
             BLELog.log(address + "连接成功");
-            gatt.discoverServices();
+            boolean res = gatt.discoverServices();
+            BLELog.log("发现服务" + res);
             changeState(BLEState.CONNECTED);
             return;
         } else {

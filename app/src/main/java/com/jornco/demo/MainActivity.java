@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, SearchActivity.class));
                 break;
             case R.id.btn_go_old:
-                startActivity(new Intent(this, OldActivity.class));
+                startActivity(new Intent(this, SendActivity.class));
                 break;
             case R.id.btn_go_new:
                 startActivity(new Intent(this, CodeActivity.class));
