@@ -196,10 +196,12 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     public void sendMsg(String[] address, final IronbotCode code, final OnIronbotWriteCallback callback) {
         List<String> codes = code.getCodes();
         int size = address.length;
-        if (size == 0 && callback != null) {
-            callback.onWriterFailure("", new BLEWriterError("", "", "没有要发送的设备地址或者没有连接的设备"));
-            callback.onAllDeviceFailure();
-            callback.onWriterEnd();
+        if (size == 0) {
+            if (callback != null) {
+                callback.onWriterFailure("", new BLEWriterError("", "", "没有要发送的设备地址或者没有连接的设备"));
+                callback.onAllDeviceFailure();
+                callback.onWriterEnd();
+            }
             return;
         }
         // 确保一条完整的指令
