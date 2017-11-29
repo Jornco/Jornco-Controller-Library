@@ -93,6 +93,7 @@ public class ServoControllerView extends LinearLayout implements ServoSeekBar.On
     }
 
     private void send(String cmd) {
+        mCmd.setText(cmd);
         controller.sendMsg(IronbotCode.create(cmd), null);
     }
 
@@ -124,7 +125,5 @@ public class ServoControllerView extends LinearLayout implements ServoSeekBar.On
         }
         String cmd = String.format(ANGLE_CMD, num, angle);
         send(cmd);
-
-        mCmd.setText(cmd);
     }
 }
