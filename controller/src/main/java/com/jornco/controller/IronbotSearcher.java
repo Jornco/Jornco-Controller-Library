@@ -27,6 +27,10 @@ public class IronbotSearcher{
         }
     };
 
+    public void setRule(IronbotRule rule) {
+        BLEPool.getInstance().setRule(rule);
+    }
+
     /**
      * 扫描设备
      * @param callback 扫描设备的回调

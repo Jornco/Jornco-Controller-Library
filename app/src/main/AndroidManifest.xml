@@ -19,7 +19,15 @@
         <activity android:name=".SearchActivity" />
         <activity android:name=".OldActivity" />
         <activity android:name=".NewActivity" />
-        <activity android:name=".CodeActivity"></activity>
+        <activity android:name=".CodeActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jornco.demo.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

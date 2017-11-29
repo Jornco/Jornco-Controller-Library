@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:defaultValue="0000fff1"
+        android:key="uuid_writer"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="uuid writer" />
+    <EditTextPreference
+        android:defaultValue="0000fff4"
+        android:key="uuid_read"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="uuid read" />
+</PreferenceScreen>

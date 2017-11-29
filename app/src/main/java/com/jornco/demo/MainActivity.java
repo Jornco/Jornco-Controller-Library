@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -16,6 +15,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mBtnSearch;
     private Button mBtnGoOld;
     private Button mBtnGoNew;
+    private Button mBtnSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initView();
         initPermission();
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void initPermission() {
@@ -46,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBtnGoOld.setOnClickListener(this);
         mBtnGoNew = (Button) findViewById(R.id.btn_go_new);
         mBtnGoNew.setOnClickListener(this);
+        mBtnSetting = (Button) findViewById(R.id.btn_setting);
+        mBtnSetting.setOnClickListener(this);
     }
 
     @Override
@@ -59,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_go_new:
                 startActivity(new Intent(this, CodeActivity.class));
+                break;
+            case R.id.btn_setting:
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
         }
     }

@@ -68,6 +68,10 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     // 接受消息处理回调
     private CopyOnWriteArraySet<BLEReceiver> mReceivers = new CopyOnWriteArraySet<>();
 
+    public void setRule(IronbotRule rule) {
+        this.mRule = rule;
+    }
+
     /**
      * 返回连接设备的map
      * @return  连接设备的map
