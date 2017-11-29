@@ -1,4 +1,4 @@
-package com.jornco.controller;
+package com.jornco.controller.util;
 
 import android.util.Log;
 

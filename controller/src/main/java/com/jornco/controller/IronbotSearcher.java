@@ -3,6 +3,8 @@ package com.jornco.controller;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
+import com.jornco.controller.ble.IronbotInfo;
+import com.jornco.controller.ble.IronbotRule;
 import com.jornco.controller.scan.IronbotFilter;
 import com.jornco.controller.scan.IronbotSearcherCallback;
 import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;

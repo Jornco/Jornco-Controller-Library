@@ -4,7 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-import com.jornco.controller.IronbotRule;
+import com.jornco.controller.ble.IronbotRule;
 import com.jornco.controller.IronbotSearcher;
 
 public class SettingsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener{

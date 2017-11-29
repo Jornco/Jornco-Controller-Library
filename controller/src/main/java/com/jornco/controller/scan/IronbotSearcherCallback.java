@@ -1,6 +1,6 @@
 package com.jornco.controller.scan;
 
-import com.jornco.controller.IronbotInfo;
+import com.jornco.controller.ble.IronbotInfo;
 
 /**
  * 扫描接口

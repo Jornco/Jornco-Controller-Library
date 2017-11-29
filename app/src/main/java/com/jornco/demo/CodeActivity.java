@@ -10,7 +10,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.jornco.controller.IronbotController;
-import com.jornco.controller.OnIronbotWriteCallback;
+import com.jornco.controller.ble.OnIronbotWriteCallback;
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.demo.adapter.DataReceiverAdapter;

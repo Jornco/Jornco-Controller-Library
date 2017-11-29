@@ -8,8 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.jornco.controller.BLELog;
-import com.jornco.controller.IronbotInfo;
+import com.jornco.controller.util.BLELog;
+import com.jornco.controller.ble.IronbotInfo;
 import com.jornco.controller.IronbotSearcher;
 import com.jornco.controller.IronbotStatus;
 import com.jornco.controller.receiver.BLEMessage;
@@ -109,7 +109,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     class MyIronbotStatus extends IronbotStatus {
 
         @Override
-        public boolean onReceiveMessage(BLEMessage message) {
+        public boolean onReceiveBLEMessage(BLEMessage message) {
             BLELog.log("接收到来自外围设备发来的信息: " + message.getMsg());
             return true;
         }

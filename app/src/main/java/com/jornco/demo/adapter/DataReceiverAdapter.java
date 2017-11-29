@@ -78,7 +78,7 @@ public class DataReceiverAdapter extends BaseAdapter {
     private class MyStatus extends IronbotStatus {
 
         @Override
-        public boolean onReceiveMessage(BLEMessage message) {
+        public boolean onReceiveBLEMessage(BLEMessage message) {
             data.add(message.getMsg());
             mContext.runOnUiThread(new Runnable() {
                 @Override

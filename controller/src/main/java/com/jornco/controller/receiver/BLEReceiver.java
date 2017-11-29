@@ -8,8 +8,8 @@ package com.jornco.controller.receiver;
 public interface BLEReceiver {
 
     // 检查是否是需要的信息
-    boolean onReceiveMessage(BLEMessage message);
+    boolean onReceiveBLEMessage(BLEMessage message);
 
-    void handMessage(BLEMessage message);
+    void handBLEMessage(BLEMessage message);
 
 }

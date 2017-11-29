@@ -1,5 +1,7 @@
 package com.jornco.controller;
 
+import com.jornco.controller.ble.IronbotWriterCallback;
+import com.jornco.controller.ble.OnIronbotWriteCallback;
 import com.jornco.controller.error.BLEWriterError;
 
 /**

@@ -1,4 +1,4 @@
-package com.jornco.controller;
+package com.jornco.controller.ble;
 
 import com.jornco.controller.error.BLEWriterError;
 

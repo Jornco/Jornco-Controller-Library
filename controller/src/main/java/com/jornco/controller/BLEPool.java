@@ -4,6 +4,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
+import com.jornco.controller.ble.BLEState;
+import com.jornco.controller.ble.IronbotInfo;
+import com.jornco.controller.ble.IronbotRule;
+import com.jornco.controller.ble.IronbotWriterCallback;
+import com.jornco.controller.ble.OnBLEDeviceChangeListener;
+import com.jornco.controller.ble.OnIronbotWriteCallback;
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.receiver.BLEMessage;
@@ -11,6 +17,7 @@ import com.jornco.controller.receiver.BLEReceiver;
 import com.jornco.controller.scan.IronbotFilter;
 import com.jornco.controller.scan.IronbotSearcherCallback;
 import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
+import com.jornco.controller.util.BLELog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +75,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     // 接受消息处理回调
     private CopyOnWriteArraySet<BLEReceiver> mReceivers = new CopyOnWriteArraySet<>();
 
-    public void setRule(IronbotRule rule) {
+    void setRule(IronbotRule rule) {
         this.mRule = rule;
     }
 
@@ -76,7 +83,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * 返回连接设备的map
      * @return  连接设备的map
      */
-    Map<String, BLE> getConnectedBLE() {
+    private Map<String, BLE> getConnectedBLE() {
         return mConnectedBLE;
     }
 
@@ -126,7 +133,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * 注册接受器
      * @param receiver 接收器
      */
-    void registerReceiver(BLEReceiver receiver) {
+    void registerBLEReceiver(BLEReceiver receiver) {
         mReceivers.add(receiver);
     }
 
@@ -134,7 +141,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * 取消订阅
      * @param receiver 接收器
      */
-    void unRegisterReceiver(BLEReceiver receiver) {
+    void unRegisterBLEReceiver(BLEReceiver receiver) {
         mReceivers.remove(receiver);
     }
 
@@ -143,8 +150,8 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
         BLEMessage message = new BLEMessage(address, msg);
         // 在这里组合出接收到的信息, 发出去
         for (BLEReceiver mReceiver : mReceivers) {
-            if (mReceiver.onReceiveMessage(message)) {
-                mReceiver.handMessage(message);
+            if (mReceiver.onReceiveBLEMessage(message)) {
+                mReceiver.handBLEMessage(message);
             }
         }
     }
@@ -358,24 +365,4 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
             mDeviceStatusChangeListener.bleDeviceStateChange(address, state);
         }
     }
-}
-
-/**
- * 设备连接变化, 接受信息接口
- */
-interface OnBLEDeviceChangeListener {
-
-    /**
-     * 连接变化
-     * @param address 地址
-     * @param state   连接, 断开, 连接中
-     */
-    void bleDeviceStateChange(String address, BLEState state);
-
-    /**
-     * 接受到信息
-     * @param address 地址
-     * @param msg     信息
-     */
-    void bleDeviceReceive(String address, String msg);
 }

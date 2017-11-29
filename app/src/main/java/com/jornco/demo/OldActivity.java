@@ -13,10 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jornco.controller.BLELog;
+import com.jornco.controller.util.BLELog;
 import com.jornco.controller.IronbotController;
 import com.jornco.controller.IronbotStatus;
-import com.jornco.controller.OnIronbotWriteCallback;
+import com.jornco.controller.ble.OnIronbotWriteCallback;
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.receiver.BLEMessage;
@@ -202,7 +202,7 @@ public class OldActivity extends AppCompatActivity implements View.OnClickListen
     private class Status extends IronbotStatus {
 
         @Override
-        public boolean onReceiveMessage(final BLEMessage message) {
+        public boolean onReceiveBLEMessage(final BLEMessage message) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

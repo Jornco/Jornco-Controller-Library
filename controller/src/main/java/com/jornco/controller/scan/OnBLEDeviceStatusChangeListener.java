@@ -1,6 +1,6 @@
 package com.jornco.controller.scan;
 
-import com.jornco.controller.BLEState;
+import com.jornco.controller.ble.BLEState;
 
 /**
  * 连接状态变化

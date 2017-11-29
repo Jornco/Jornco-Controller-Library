@@ -8,12 +8,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.jornco.controller.BLELog;
-import com.jornco.controller.BLEState;
+import com.jornco.controller.util.BLELog;
+import com.jornco.controller.ble.BLEState;
 import com.jornco.controller.IronbotController;
-import com.jornco.controller.IronbotInfo;
+import com.jornco.controller.ble.IronbotInfo;
 import com.jornco.controller.IronbotSearcher;
-import com.jornco.controller.OnIronbotWriteCallback;
+import com.jornco.controller.ble.OnIronbotWriteCallback;
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
