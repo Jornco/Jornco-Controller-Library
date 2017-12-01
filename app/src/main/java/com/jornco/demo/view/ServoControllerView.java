@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.jornco.controller.util.BLELog;
 import com.jornco.demo.IBLESend;
 
 import java.util.ArrayList;
@@ -106,6 +107,11 @@ public class ServoControllerView extends LinearLayout implements ServoSeekBar.On
 
     private String generateCmd() {
         String time = getTime();
+        int t = Integer.parseInt(time);
+        if (t <= 0) {
+            BLELog.log("时间间隔不能小于0");
+            time = "1000";
+        }
         StringBuilder sb = new StringBuilder();
         sb.append("#A");
         for (ServoSeekBar seekBar : mServoSeekBar) {

@@ -17,12 +17,6 @@ import java.util.TreeMap;
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 0x1111;
-    private Button mBtnSearch;
-    private Button mBtnGoOld;
-    private Button mBtnGoNew;
-    private Button mBtnSetting;
-
-    private ViewGroup container;
 
     private final TreeMap<String, Class<? extends Activity>> buttons = new TreeMap<String, Class<? extends Activity>>() {{
         put("蓝牙扫描", SearchActivity.class);
@@ -52,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        container = (ViewGroup) findViewById(R.id.list);
+        ViewGroup container = (ViewGroup) findViewById(R.id.list);
         for (final Map.Entry<String, Class<? extends Activity>> entry : buttons.entrySet()) {
             Button button = new Button(this);
             button.setText(entry.getKey());
