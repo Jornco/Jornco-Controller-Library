@@ -13,8 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.jornco.controller.IronbotController;
-import com.jornco.controller.code.IronbotCode;
+import com.jornco.demo.IBLESend;
 import com.jornco.demo.R;
 
 /**
@@ -29,9 +28,9 @@ public class ColorSendView extends FrameLayout implements SeekBar.OnSeekBarChang
     private Button mBtnSendColor;
     private TextView mTvColorCmd;
 
+    private IBLESend mBLESend;
     private static final String COLOR_CMD = "#B%d,%d,%d,*";
 
-    private IronbotController controller = new IronbotController();
     public ColorSendView(@NonNull Context context) {
         this(context, null);
     }
@@ -64,13 +63,17 @@ public class ColorSendView extends FrameLayout implements SeekBar.OnSeekBarChang
 
     }
 
+    public void setBLESend(IBLESend send) {
+        this.mBLESend = send;
+    }
+
     @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
             case R.id.btn_send_color:
                 String cmd = generateCmd();
-                controller.sendMsg(IronbotCode.create(cmd), null);
+                send(cmd);
                 break;
             default:
                 break;
@@ -82,7 +85,7 @@ public class ColorSendView extends FrameLayout implements SeekBar.OnSeekBarChang
         String cmd = generateCmd();
         mTvColorCmd.setText(cmd);
         if (mEnableAutoSend.isChecked()) {
-            controller.sendMsg(IronbotCode.create(cmd), null);
+            send(cmd);
         }
     }
 
@@ -94,6 +97,12 @@ public class ColorSendView extends FrameLayout implements SeekBar.OnSeekBarChang
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
 
+    }
+
+    private void send(String code) {
+        if (mBLESend != null) {
+            mBLESend.send(code);
+        }
     }
 
     private String generateCmd() {

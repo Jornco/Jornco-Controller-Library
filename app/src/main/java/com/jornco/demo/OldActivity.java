@@ -1,6 +1,5 @@
 package com.jornco.demo;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -13,13 +12,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jornco.controller.util.BLELog;
 import com.jornco.controller.IronbotController;
 import com.jornco.controller.IronbotStatus;
 import com.jornco.controller.ble.OnIronbotWriteCallback;
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.receiver.BLEMessage;
+import com.jornco.controller.util.BLELog;
 import com.jornco.controller.util.RobotUtils;
 
 import java.util.ArrayList;
@@ -98,9 +97,6 @@ public class OldActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_search:
-                startActivity(new Intent(this, SearchActivity.class));
-                break;
             case R.id.btn_send_old_color:
                 sendOldColor();
                 break;

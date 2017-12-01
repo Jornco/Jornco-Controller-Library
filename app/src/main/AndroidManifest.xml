@@ -28,7 +28,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jornco.demo.MainActivity" />
         </activity>
-        <activity android:name=".SendActivity"></activity>
+        <activity android:name=".SendActivity" />
+        <activity android:name=".BLEServiceActivity"></activity>
     </application>
 
 </manifest>

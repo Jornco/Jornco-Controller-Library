@@ -15,8 +15,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.jornco.controller.IronbotController;
-import com.jornco.controller.code.IronbotCode;
+import com.jornco.demo.IBLESend;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,8 @@ public class ServoControllerView extends LinearLayout implements ServoSeekBar.On
     private Button mBtnSend;
     private EditText mTime;
     private CheckBox mEnableAutoSend;
-    private IronbotController controller = new IronbotController();
+
+    private IBLESend mBLESend;
 
     public ServoControllerView(@NonNull Context context) {
         this(context, null);
@@ -48,6 +48,14 @@ public class ServoControllerView extends LinearLayout implements ServoSeekBar.On
     public ServoControllerView(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOrientation(LinearLayout.VERTICAL);
+        initView(context);
+    }
+
+    public void setBLESend(IBLESend send) {
+        this.mBLESend = send;
+    }
+
+    private void initView(Context context) {
         for (int i = 0; i < 10; i++) {
             ServoSeekBar seekBar = new ServoSeekBar(context);
             seekBar.setNum(i);
@@ -89,12 +97,11 @@ public class ServoControllerView extends LinearLayout implements ServoSeekBar.On
         mCmd = new TextView(context);
         mCmd.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         addView(mCmd);
-
     }
 
     private void send(String cmd) {
         mCmd.setText(cmd);
-        controller.sendMsg(IronbotCode.create(cmd), null);
+        mBLESend.send(cmd);
     }
 
     private String generateCmd() {

@@ -1,21 +1,35 @@
 package com.jornco.demo;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import java.util.Map;
+import java.util.TreeMap;
+
+public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 0x1111;
     private Button mBtnSearch;
     private Button mBtnGoOld;
     private Button mBtnGoNew;
     private Button mBtnSetting;
+
+    private ViewGroup container;
+
+    private final TreeMap<String, Class<? extends Activity>> buttons = new TreeMap<String, Class<? extends Activity>>() {{
+        put("蓝牙扫描", SearchActivity.class);
+        put("旧版发送", BLEServiceActivity.class);
+        put("新版发送", CodeActivity.class);
+        put("设置", SettingsActivity.class);
+    }};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,32 +52,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView() {
-        mBtnSearch = (Button) findViewById(R.id.btn_search);
-
-        mBtnSearch.setOnClickListener(this);
-        mBtnGoOld = (Button) findViewById(R.id.btn_go_old);
-        mBtnGoOld.setOnClickListener(this);
-        mBtnGoNew = (Button) findViewById(R.id.btn_go_new);
-        mBtnGoNew.setOnClickListener(this);
-        mBtnSetting = (Button) findViewById(R.id.btn_setting);
-        mBtnSetting.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_search:
-                startActivity(new Intent(this, SearchActivity.class));
-                break;
-            case R.id.btn_go_old:
-                startActivity(new Intent(this, SendActivity.class));
-                break;
-            case R.id.btn_go_new:
-                startActivity(new Intent(this, CodeActivity.class));
-                break;
-            case R.id.btn_setting:
-                startActivity(new Intent(this, SettingsActivity.class));
-                break;
+        container = (ViewGroup) findViewById(R.id.list);
+        for (final Map.Entry<String, Class<? extends Activity>> entry : buttons.entrySet()) {
+            Button button = new Button(this);
+            button.setText(entry.getKey());
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, entry.getValue()));
+                }
+            });
+            container.addView(button);
         }
     }
+
 }
