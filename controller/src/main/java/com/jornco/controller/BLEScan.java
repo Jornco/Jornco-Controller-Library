@@ -41,7 +41,9 @@ class BLEScan implements BluetoothAdapter.LeScanCallback{
         if (mFilter.filter(device)) {
             String address = device.getAddress();
             String name = device.getName();
-            mCallback.onIronbotFound(new IronbotInfo(name, address));
+            if (mCallback != null) {
+                mCallback.onIronbotFound(new IronbotInfo(name, address));
+            }
         }
     }
 
