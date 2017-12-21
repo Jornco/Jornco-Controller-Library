@@ -5,10 +5,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.jornco.controller.IronbotSearcher;
 import com.jornco.controller.ble.IronbotInfo;
 import com.jornco.controller.scan.IronbotSearcherCallback;
+import com.jornco.demo.adapter.TextAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AISearchActivity extends AppCompatActivity implements View.OnClickListener, IronbotSearcherCallback {
 
@@ -17,6 +22,11 @@ public class AISearchActivity extends AppCompatActivity implements View.OnClickL
     private Button mBtnStop;
     private IronbotSearcher mSearcher;
     private IronbotInfo mDeviceInfo;
+    private ListView mListView;
+    private TextAdapter mAdapter;
+
+    // 扫描到的蓝牙
+    private List<String> mData = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +35,12 @@ public class AISearchActivity extends AppCompatActivity implements View.OnClickL
         mSearcher = new IronbotSearcher();
         mBtnScan = (Button) findViewById(R.id.btn_scan);
         mBtnStop = (Button) findViewById(R.id.btn_stop);
+        mListView = (ListView) findViewById(R.id.list_view);
         mBtnScan.setOnClickListener(this);
         mBtnStop.setOnClickListener(this);
+
+        mAdapter = new TextAdapter(mData);
+        mListView.setAdapter(mAdapter);
     }
 
     @Override
@@ -47,10 +61,23 @@ public class AISearchActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onIronbotFound(IronbotInfo info) {
-        Log.i(TAG, "onIronbotFound: " + info.toString());
-        // 在该回调进行UI操作的话, 需要切换到UI线程进行处理
-        // 如使用runOnUiThread(..);
+        String text = info.toString();
+        Log.i(TAG, "onIronbotFound: " + text);
         mDeviceInfo = info;
+
+        // 同一个设备会被多次扫描到, 需自己做过滤
+        if (mData.contains(text)) {
+            return;
+        }
+
+        mData.add(text);
+        // 确保在ui线程
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -58,4 +85,5 @@ public class AISearchActivity extends AppCompatActivity implements View.OnClickL
         super.onStop();
         mSearcher.stopScan();
     }
+
 }
