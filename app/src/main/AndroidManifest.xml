@@ -29,7 +29,8 @@
                 android:value="com.jornco.demo.MainActivity" />
         </activity>
         <activity android:name=".SendActivity" />
-        <activity android:name=".BLEServiceActivity"></activity>
+        <activity android:name=".BLEServiceActivity" />
+        <activity android:name=".AISearchActivity"></activity>
     </application>
 
 </manifest>

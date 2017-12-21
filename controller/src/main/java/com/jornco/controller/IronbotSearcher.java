@@ -19,6 +19,7 @@ import java.util.List;
 
 public class IronbotSearcher{
 
+    private BLEScan mBLEScan = new BLEScan();
 
     // 过滤蓝牙扫描的规则
     private IronbotFilter mFilter = new IronbotFilter() {
@@ -38,14 +39,14 @@ public class IronbotSearcher{
      * @param callback 扫描设备的回调
      */
     public void searchIronbot(IronbotSearcherCallback callback) {
-        BLEPool.getInstance().searchIronbot(callback, mFilter);
+        mBLEScan.searchIronbot(callback, mFilter);
     }
 
     /**
      * 停止扫描
      */
     public void stopScan(){
-        BLEPool.getInstance().stopScan();
+        mBLEScan.stopScan();
     }
 
     /**
@@ -61,14 +62,14 @@ public class IronbotSearcher{
      * @return true if bluetooth is enabled
      */
     public boolean isEnable(){
-        return BLEPool.getInstance().isEnable();
+        return mBLEScan.isEnable();
     }
 
     /**
      * 打开蓝牙
      */
     public void enable() {
-        BLEPool.getInstance().enable();
+        mBLEScan.enable();
     }
 
     /**

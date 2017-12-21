@@ -19,7 +19,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 0x1111;
 
     private final TreeMap<String, Class<? extends Activity>> buttons = new TreeMap<String, Class<? extends Activity>>() {{
-        put("蓝牙扫描", SearchActivity.class);
+        put("蓝牙扫描", AISearchActivity.class);
+        put("蓝牙扫描/连接", SearchActivity.class);
         put("旧版发送", BLEServiceActivity.class);
         put("新版发送", CodeActivity.class);
         put("设置", SettingsActivity.class);

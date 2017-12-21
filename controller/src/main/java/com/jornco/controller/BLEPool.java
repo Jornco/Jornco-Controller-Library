@@ -14,8 +14,6 @@ import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.receiver.BLEMessage;
 import com.jornco.controller.receiver.BLEReceiver;
-import com.jornco.controller.scan.IronbotFilter;
-import com.jornco.controller.scan.IronbotSearcherCallback;
 import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
 import com.jornco.controller.util.BLELog;
 
@@ -32,9 +30,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Created by kkopite on 2017/10/25.
  */
 
-class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.OnSendListener, BluetoothAdapter.LeScanCallback{
-
-    private IronbotFilter mFilter;
+class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.OnSendListener{
 
     private static class Holder {
         private static BLEPool INSTANCE = new BLEPool();
@@ -277,33 +273,8 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     // 蓝牙适配器
     private BluetoothAdapter mAdapter;
 
-    // 扫描蓝牙回调
-    private IronbotSearcherCallback mCallback;
-
     // 蓝牙设备连接状态回调
     private CopyOnWriteArraySet<OnBLEDeviceStatusChangeListener> mDeviceStatusChangeListeners = new CopyOnWriteArraySet<>();
-
-    /**
-     * 扫描设备
-     * @param callback 扫描设备的回调
-     */
-    public void searchIronbot(IronbotSearcherCallback callback, IronbotFilter filter) {
-        if (mAdapter == null || !mAdapter.isEnabled()) {
-            BLELog.log("蓝牙不可用");
-            return;
-        }
-        mFilter = filter;
-        this.mCallback = callback;
-        mAdapter.startLeScan(this);
-    }
-
-    /**
-     * 停止扫描
-     */
-    public void stopScan(){
-        mAdapter.stopLeScan(this);
-        mCallback = null;
-    }
 
     /**
      * 获取当前已连接的蓝牙设备
@@ -320,23 +291,6 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     }
 
     /**
-     * 蓝牙是否可用
-     * @return true if bluetooth is enabled
-     */
-    public boolean isEnable(){
-        return mAdapter != null && mAdapter.isEnabled();
-    }
-
-    /**
-     * 打开蓝牙
-     */
-    public void enable() {
-        if (mAdapter != null) {
-            mAdapter.enable();
-        }
-    }
-
-    /**
      * 添加蓝牙设备连接断开状态的监听
      * @param listener 监听器
      */
@@ -350,15 +304,6 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      */
     public void removeOnBLEDeviceStatusChangeListener(OnBLEDeviceStatusChangeListener listener) {
         mDeviceStatusChangeListeners.remove(listener);
-    }
-
-    @Override
-    public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-        if (mFilter.filter(device)) {
-            String address = device.getAddress();
-            String name = device.getName();
-            mCallback.onIronbotFound(new IronbotInfo(name, address));
-        }
     }
 
     @Override
