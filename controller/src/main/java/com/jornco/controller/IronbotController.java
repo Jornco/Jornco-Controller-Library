@@ -1,7 +1,10 @@
 package com.jornco.controller;
 
 import com.jornco.controller.ble.OnIronbotWriteCallback;
+import com.jornco.controller.ble.SensorBean;
 import com.jornco.controller.code.IronbotCode;
+
+import java.util.List;
 
 /**
  * 发送控制
@@ -10,6 +13,9 @@ import com.jornco.controller.code.IronbotCode;
 
 public class IronbotController{
 
+    public void initSensor(List<SensorBean> list) {
+        BLEPool.getInstance().initSensor(list);
+    }
     /**
      * 给所有当前连接的设备发指令
      * @param code      指令

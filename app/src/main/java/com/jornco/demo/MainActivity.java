@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         put("蓝牙扫描/连接", SearchActivity.class);
         put("旧版发送", BLEServiceActivity.class);
         put("新版发送", CodeActivity.class);
+        put("监听距离", ListenActivity.class);
         put("设置", SettingsActivity.class);
     }};
 

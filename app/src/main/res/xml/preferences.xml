@@ -13,4 +13,11 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="uuid read" />
+    <EditTextPreference
+        android:defaultValue="200"
+        android:key="ultrasonic_distance"
+        android:singleLine="true"
+        android:inputType="number"
+        android:title="Ultrasonic distance"
+        />
 </PreferenceScreen>

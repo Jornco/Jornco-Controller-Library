@@ -3,17 +3,23 @@ package com.jornco.controller;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.util.SparseArray;
 
 import com.jornco.controller.ble.BLEState;
+import com.jornco.controller.ble.DataType;
 import com.jornco.controller.ble.IronbotInfo;
 import com.jornco.controller.ble.IronbotRule;
 import com.jornco.controller.ble.IronbotWriterCallback;
 import com.jornco.controller.ble.OnBLEDeviceChangeListener;
 import com.jornco.controller.ble.OnIronbotWriteCallback;
+import com.jornco.controller.ble.SensorBean;
+import com.jornco.controller.ble.SensorType;
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.receiver.BLEMessage;
+import com.jornco.controller.receiver.BLEMessageFactory;
 import com.jornco.controller.receiver.BLEReceiver;
+import com.jornco.controller.receiver.IBLEMessageFactory;
 import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
 import com.jornco.controller.util.BLELog;
 
@@ -68,8 +74,16 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     // 已连接设备
     private Map<String, BLE> mConnectedBLE = new HashMap<>();
 
+    // 端口对应传感器
+    private SparseArray<SensorType> mSensorTypeMap = new SparseArray<>();
+
+    // 输出传感器对应端口
+    private Map<SensorType, Integer> mSendSensorTypeIntegerMap = new HashMap<>();
+
     // 接受消息处理回调
     private CopyOnWriteArraySet<BLEReceiver> mReceivers = new CopyOnWriteArraySet<>();
+
+    private IBLEMessageFactory mFactory = new BLEMessageFactory();
 
     void setRule(IronbotRule rule) {
         this.mRule = rule;
@@ -143,7 +157,8 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
 
     @Override
     public void bleDeviceReceive(String address, String msg) {
-        BLEMessage message = new BLEMessage(address, msg);
+//        BLEMessage message = new BLEMessage(address, msg);
+        BLEMessage message = mFactory.createBLEMessage(address, msg, mSensorTypeMap);
         // 在这里组合出接收到的信息, 发出去
         for (BLEReceiver mReceiver : mReceivers) {
             if (mReceiver.onReceiveBLEMessage(message)) {
@@ -151,6 +166,45 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
             }
         }
     }
+
+    public void initSensor(List<SensorBean> list) {
+        if (list == null) {
+            return;
+        }
+        SparseArray<SensorBean> sparseArray = new SparseArray<>();
+        for (SensorBean sensorBean : list) {
+            sparseArray.put(sensorBean.getPort(), sensorBean);
+        }
+
+        // 清空之前的
+        mSendSensorTypeIntegerMap.clear();
+        mSensorTypeMap.clear();
+        StringBuilder sb = new StringBuilder();
+        sb.append("#E");
+        // 设置好对应端口对应的传感器
+        for (int i = 0; i < 6; i++) {
+            SensorBean bean = sparseArray.get(i);
+            String typeId = "0";
+            if (bean != null) {
+                SensorType type = bean.getType();
+                int port = bean.getPort();
+                typeId = type.getTypeId();
+
+                // 记录那个端口对应哪个传感器
+                if (type.getDataType() == DataType.REC) {
+                    mSensorTypeMap.put(port, type);
+                } else {
+                    mSendSensorTypeIntegerMap.put(type, port);
+                }
+            }
+            sb.append(typeId).append(",");
+        }
+        sb.append("*");
+        BLELog.log("初始化传感器: " + sb.toString());
+        // 发送
+        sendMsg(IronbotCode.create(sb.toString()), null);
+    }
+
 
     /**
      * 当前是否在发送
