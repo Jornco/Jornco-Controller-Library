@@ -193,7 +193,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
                 // 记录那个端口对应哪个传感器
                 if (type.getDataType() == DataType.REC) {
                     mSensorTypeMap.put(port, type);
-                } else {
+                } else if (type.getDataType() == DataType.SEND){
                     mSendSensorTypeIntegerMap.put(type, port);
                 }
             }

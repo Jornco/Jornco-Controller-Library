@@ -6,6 +6,11 @@ package com.jornco.controller.ble;
  */
 
 public enum  SensorType {
+    // 再加一个描述信息会不会好点?
+
+    // 没有选择
+    NONE(DataType.NONE, "0"),
+
     // 接受信息的传感器
     COLOR(DataType.REC, "001"),
     ULTRASONIC(DataType.REC, "002"),

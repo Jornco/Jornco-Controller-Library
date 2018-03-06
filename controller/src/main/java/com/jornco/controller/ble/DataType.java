@@ -6,6 +6,6 @@ package com.jornco.controller.ble;
 public enum DataType {
     // 用户手动传递
     SEND,
-    // 200ms接收信息的
+    NONE, // 200ms接收信息的
     REC
 }

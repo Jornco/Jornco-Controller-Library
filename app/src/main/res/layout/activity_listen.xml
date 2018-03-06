@@ -1,23 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.jornco.demo.ListenActivity">
+    tools:context="com.jornco.demo.activity.ListenActivity">
 
-    <!--限定距离-->
-    <TextView
-        android:id="@+id/tv_limit_distance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <!--当前监听到的距离-->
-    <TextView
-        android:id="@+id/tv_distance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:id="@+id/ll_select_sensor_port"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-</LinearLayout>
+            <TextView
+                android:text="初始化传感器端口:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_init_sensor"
+            android:text="初始化传感器"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!--限定距离-->
+        <TextView
+            android:id="@+id/tv_limit_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!--当前监听到的距离-->
+        <TextView
+            android:id="@+id/tv_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+
+</ScrollView>

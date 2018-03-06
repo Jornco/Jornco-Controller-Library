@@ -43,7 +43,7 @@
             android:name=".BLEServiceActivity"
             android:parentActivityName=".MainActivity"/>
         <activity
-            android:name=".ListenActivity"
+            android:name=".activity.ListenActivity"
             android:parentActivityName=".MainActivity">
         </activity>
     </application>
