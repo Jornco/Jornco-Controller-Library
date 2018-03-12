@@ -124,6 +124,10 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
         device.disconnect();
     }
 
+    Map<SensorType, Integer> getSendSensorTypeIntegerMap() {
+        return mSendSensorTypeIntegerMap;
+    }
+
     /**
      * 发送消息, 需要上层做同步
      * @param address   地址
@@ -167,7 +171,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
         }
     }
 
-    public void initSensor(List<SensorBean> list) {
+    void initSensor(List<SensorBean> list) {
         if (list == null) {
             return;
         }

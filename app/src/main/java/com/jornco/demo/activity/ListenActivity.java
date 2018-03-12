@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.jornco.controller.IronbotController;
 import com.jornco.controller.IronbotStatus;
 import com.jornco.controller.ble.SensorBean;
+import com.jornco.controller.ble.SensorType;
 import com.jornco.controller.receiver.BLEMessage;
 import com.jornco.demo.R;
 
@@ -30,7 +31,29 @@ public class ListenActivity extends AppCompatActivity implements View.OnClickLis
         public void handBLEMessage(BLEMessage message) {
             super.handBLEMessage(message);
             // 处理数据
+            SensorType type = message.getType();
 
+            // 也可创建10多个IronbotStatus, 针对每一个类型进行处理
+            switch (type) {
+                case BEE:
+                    // todo
+                    break;
+                case KEY:
+                case LED:
+                case RGB:
+                case NONE:
+                case COLOR:
+                case VOICE:
+                case HUMITURE:
+                case TRACKING:
+                case ULTRASONIC:
+                case INFRARED_REC:
+                case INFRARED_SEND:
+                case PHOTOSENSITIVE:
+                case SEGMENT_DISPLAYS:
+                default:
+                    // 不是那啥的
+            }
         }
     };
 

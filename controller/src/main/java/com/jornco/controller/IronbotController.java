@@ -2,9 +2,11 @@ package com.jornco.controller;
 
 import com.jornco.controller.ble.OnIronbotWriteCallback;
 import com.jornco.controller.ble.SensorBean;
+import com.jornco.controller.ble.SensorType;
 import com.jornco.controller.code.IronbotCode;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 发送控制
@@ -12,6 +14,10 @@ import java.util.List;
  */
 
 public class IronbotController{
+
+    public Map<SensorType, Integer> getSendSensorTypeIntegerMap() {
+        return BLEPool.getInstance().getSendSensorTypeIntegerMap();
+    }
 
     public void initSensor(List<SensorBean> list) {
         BLEPool.getInstance().initSensor(list);
