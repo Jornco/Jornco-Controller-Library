@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.jornco.controller.BLEScanActivity;
 import com.jornco.demo.activity.ListenActivity;
 
 import java.util.Map;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final TreeMap<String, Class<? extends Activity>> buttons = new TreeMap<String, Class<? extends Activity>>() {{
         put("蓝牙扫描/连接", SearchActivity.class);
+        put("自带的扫描界面", BLEScanActivity.class);
         put("旧版发送", BLEServiceActivity.class);
         put("新版发送", CodeActivity.class);
         put("监听距离", ListenActivity.class);

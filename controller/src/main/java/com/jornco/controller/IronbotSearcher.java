@@ -26,7 +26,8 @@ public class IronbotSearcher{
         @Override
         public boolean filter(BluetoothDevice info) {
             String name = info.getName();
-            return name != null && (name.equals("RS-BLE") || name.equals("PS-BLE") || name.startsWith("TAv") || name.startsWith("CC"));
+            return true;
+//            return name != null && (name.equals("RS-BLE") || name.equals("PS-BLE") || name.startsWith("TAv") || name.startsWith("CC"));
         }
     };
 
