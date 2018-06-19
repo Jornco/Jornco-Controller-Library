@@ -190,7 +190,7 @@ class BLE extends BluetoothGattCallback {
      * @param data      指令
      * @param callback  回调
      */
-    void writeData(String data, IronbotWriterCallback callback) {
+    void writeData(byte[] data, IronbotWriterCallback callback) {
         mCurrentStrategy.write(data, callback);
     }
 

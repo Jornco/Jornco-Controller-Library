@@ -134,7 +134,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * @param cmd       指令
      * @param callback  回调
      */
-    void sendMsg(String address, String cmd, IronbotWriterCallback callback) {
+    void sendMsg(String address, byte[] cmd, IronbotWriterCallback callback) {
         BLE device = mConnectedBLE.get(address);
         if (device == null) {
             callback.writerFailure(address, cmd, new BLEWriterError(address, cmd, "该设备未连接"));
@@ -248,11 +248,11 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * @param callback  回调
      */
     public void sendMsg(String[] address, final IronbotCode code, final OnIronbotWriteCallback callback) {
-        List<String> codes = code.getCodes();
+        List<byte[]> codes = code.getCodes();
         int size = address.length;
         if (size == 0) {
             if (callback != null) {
-                callback.onWriterFailure("", new BLEWriterError("", "", "没有要发送的设备地址或者没有连接的设备"));
+                callback.onWriterFailure("", new BLEWriterError("", BLEConstants.EMPTY_DATA, "没有要发送的设备地址或者没有连接的设备"));
                 callback.onAllDeviceFailure();
                 callback.onWriterEnd();
             }
@@ -318,7 +318,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     private static class WriteData {
 
         // 要发的数据
-        private String data;
+        private byte[] data;
 
         // 要发的地址
         private String[] address;

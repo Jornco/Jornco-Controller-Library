@@ -2,11 +2,12 @@ package com.jornco.controller;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.text.TextUtils;
 
 import com.jornco.controller.ble.IronbotWriterCallback;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.util.BLELog;
+
+import java.util.Arrays;
 
 /**
  * Created by kkopite on 2017/11/29.
@@ -26,9 +27,9 @@ class ConnectedWriterStrategy implements IWriterStrategy {
     }
 
     @Override
-    public void write(String data, IronbotWriterCallback callback) {
-        BLELog.log("对地址: " + address + " 发送: " + data);
-        if(TextUtils.isEmpty(data) || (data.length() > MOST_WRITE_LENGTH)){
+    public void write(byte[] data, IronbotWriterCallback callback) {
+        BLELog.log("对地址: " + address + " 发送: " + Arrays.toString(data));
+        if(data.length == 0 || (data.length > MOST_WRITE_LENGTH)){
             callback.writerFailure(address, data, new BLEWriterError(address, data, "发送数据不能大于20个字符长度或者小于0"));
             return;
         }
@@ -63,13 +64,13 @@ class ConnectedWriterStrategy implements IWriterStrategy {
     public void writeFailure() {
         synchronized (this){
             if(mCallback != null) {
-                String data = "";
+                byte[] data = BLEConstants.EMPTY_DATA;
                 if (mWriterBGC != null) {
-                    data = new String(mWriterBGC.getValue());
+                    data = mWriterBGC.getValue();
                 }
                 IronbotWriterCallback tmp = this.mCallback;
                 mCallback = null;
-                tmp.writerFailure(address, data, new BLEWriterError(address, data, "发送出现异常"));
+                tmp.writerFailure(address, data, new BLEWriterError(address, BLEConstants.EMPTY_DATA, "发送出现异常"));
             }
 //            mCallback = null;
         }
@@ -87,7 +88,7 @@ class ConnectedWriterStrategy implements IWriterStrategy {
             mWriterBGC = null;
             mGatt = null;
             if(mCallback != null){
-                mCallback.writerFailure(address, "", new BLEWriterError(address, "", "当前设备断开"));
+                mCallback.writerFailure(address, BLEConstants.EMPTY_DATA, new BLEWriterError(address, BLEConstants.EMPTY_DATA, "当前设备断开"));
             }
             mCallback = null;
         }

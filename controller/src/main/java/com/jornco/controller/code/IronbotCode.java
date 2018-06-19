@@ -3,6 +3,7 @@ package com.jornco.controller.code;
 import android.util.SparseBooleanArray;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,21 +12,28 @@ import java.util.List;
 
 public class IronbotCode {
 
-    private List<String> codes = new ArrayList<>();
+    private List<byte[]> codes = new ArrayList<>();
     private String data = "";
 
     public String getData() {
         return data;
     }
 
-    public List<String> getCodes() {
+    public List<byte[]> getCodes() {
         return codes;
     }
 
     public static IronbotCode create(String code) {
         IronbotCode ironbotCode = new IronbotCode();
         ironbotCode.data = code;
-        ironbotCode.codes = sqlit(code);
+        ironbotCode.codes = split(code);
+        return ironbotCode;
+    }
+
+    public static IronbotCode create(byte[] code) {
+        IronbotCode ironbotCode = new IronbotCode();
+        ironbotCode.data = new String(code);
+        ironbotCode.codes = split(code);
         return ironbotCode;
     }
 
@@ -135,7 +143,7 @@ public class IronbotCode {
             sb.insert(0, "--\n\n").append("\n--");
             String msg = sb.toString();
             IronbotCode code = new IronbotCode();
-            code.codes = sqlit(msg);
+            code.codes = split(msg);
             code.data = msg;
             return code;
         }
@@ -143,7 +151,7 @@ public class IronbotCode {
         public IronbotCode build() {
             String msg = sb.toString();
             IronbotCode code = new IronbotCode();
-            code.codes = sqlit(msg);
+            code.codes = split(msg);
             code.data = msg;
             return code;
         }
@@ -153,18 +161,37 @@ public class IronbotCode {
         }
     }
 
-    private static List<String> sqlit(String msg) {
-        List<String> codes = new ArrayList<>();
-        int length = msg.length();
+    private static List<byte[]> split(byte[] msg) {
+        List<byte[]> codes = new ArrayList<>();
+        int length = msg.length;
         if (length <= 20) {
             codes.add(msg);
         } else {
             int index = 0;
             while (index < length) {
+                int end = index + 20;
                 if (index + 20 > length) {
-                    codes.add(msg.substring(index, length));
+                    end = length;
+                }
+                codes.add(Arrays.copyOfRange(msg, index, end));
+                index += 20;
+            }
+        }
+        return codes;
+    }
+
+    private static List<byte[]> split(String msg) {
+        List<byte[]> codes = new ArrayList<>();
+        int length = msg.length();
+        if (length <= 20) {
+            codes.add(msg.getBytes());
+        } else {
+            int index = 0;
+            while (index < length) {
+                if (index + 20 > length) {
+                    codes.add(msg.substring(index, length).getBytes());
                 } else {
-                    codes.add(msg.substring(index, index + 20));
+                    codes.add(msg.substring(index, index + 20).getBytes());
                 }
                 index += 20;
             }

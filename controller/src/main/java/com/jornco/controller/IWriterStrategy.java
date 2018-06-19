@@ -10,7 +10,7 @@ import com.jornco.controller.ble.IronbotWriterCallback;
  */
 
 interface IWriterStrategy {
-    void write(String data, IronbotWriterCallback callback);
+    void write(byte[] data, IronbotWriterCallback callback);
     void writeSuccess();
     void writeFailure();
     void start(BluetoothGatt gatt, BluetoothGattCharacteristic writerBGC);

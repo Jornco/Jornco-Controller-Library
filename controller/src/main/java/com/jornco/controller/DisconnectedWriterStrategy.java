@@ -19,7 +19,7 @@ class DisconnectedWriterStrategy implements IWriterStrategy {
     }
 
     @Override
-    public void write(String data, IronbotWriterCallback callback) {
+    public void write(byte[] data, IronbotWriterCallback callback) {
         callback.writerFailure(address, data, new BLEWriterError(address, data, "当前设备已断开"));
     }
 

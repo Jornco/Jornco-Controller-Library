@@ -54,7 +54,7 @@ class MultiIronbotWriterCallback implements IronbotWriterCallback {
     }
 
     @Override
-    public void writerFailure(String address, String data, BLEWriterError error) {
+    public void writerFailure(String address, byte[] data, BLEWriterError error) {
         if (callback != null) {
             callback.onWriterFailure(address, error);
         }
