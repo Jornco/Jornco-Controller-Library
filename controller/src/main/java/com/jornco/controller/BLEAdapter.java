@@ -115,7 +115,7 @@ public class BLEAdapter extends RecyclerView.Adapter<BLEAdapter.VH> implements O
                 public void onClick(View v) {
                     BLEState state = info.getState();
                     if (state == BLEState.DISCONNECT) {
-                        mSearcher.connect(itemView.getContext(), address);
+                        mSearcher.connect(itemView.getContext(), address, info.getName());
                     } else {
                         mSearcher.disConnect(address);
                     }

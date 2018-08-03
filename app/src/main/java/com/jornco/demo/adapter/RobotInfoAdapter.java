@@ -118,7 +118,7 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
                 public void onClick(View v) {
                     BLEState state = info.getState();
                     if (state == BLEState.DISCONNECT) {
-                        mSearcher.connect(itemView.getContext(), address);
+                        mSearcher.connect(itemView.getContext(), address, info.getName());
                     } else {
                         mSearcher.disConnect(address);
                     }

@@ -26,8 +26,8 @@ public class IronbotSearcher{
         @Override
         public boolean filter(BluetoothDevice info) {
             String name = info.getName();
-            return true;
-//            return name != null && (name.equals("RS-BLE") || name.equals("PS-BLE") || name.startsWith("TAv") || name.startsWith("CC"));
+//            return true;
+            return name != null && (name.equals("RS-BLE") || name.equals("PS-BLE") || name.startsWith("TAv") || name.startsWith("CC"));
         }
     };
 
@@ -77,9 +77,10 @@ public class IronbotSearcher{
      * 连接设备
      * @param context 上下文
      * @param address 要连接设备的地址
+     * @param name 设备的名称 (由于name可能是从 scanRecord拿出来的, 到实例BLE时拿到scanRecord, 所以直接从这里去获取)
      */
-    public void connect(Context context, String address) {
-        BLEPool.getInstance().connect(context, address);
+    public void connect(Context context, String address, String name) {
+        BLEPool.getInstance().connect(context, address, name);
     }
 
     /**

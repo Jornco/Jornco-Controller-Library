@@ -3,6 +3,7 @@ package com.jornco.controller;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.SparseArray;
 
 import com.jornco.controller.ble.BLEState;
@@ -101,10 +102,15 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * 连接
      * @param context   上下文
      * @param address   地址
+     * @param name 设备名称
      */
-    void connect(Context context, String address) {
+    void connect(Context context, String address, String name) {
         BluetoothDevice device = mAdapter.getRemoteDevice(address);
-        BLE info = new BLE(address, device.getName(), device, mRule);
+        String tmpName = device.getName();
+        if (TextUtils.isEmpty(tmpName)) {
+            tmpName = name;
+        }
+        BLE info = new BLE(address, tmpName, device, mRule);
         mConnectedBLE.put(info.getAddress(), info);
         info.connect(context, this);
     }
