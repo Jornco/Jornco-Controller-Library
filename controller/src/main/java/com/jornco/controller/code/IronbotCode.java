@@ -161,7 +161,7 @@ public class IronbotCode {
         }
     }
 
-    private static List<byte[]> split(byte[] msg) {
+    public static List<byte[]> split(byte[] msg) {
         List<byte[]> codes = new ArrayList<>();
         int length = msg.length;
         if (length <= 20) {
