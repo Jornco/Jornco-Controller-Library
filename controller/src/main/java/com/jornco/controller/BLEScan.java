@@ -40,16 +40,14 @@ class BLEScan implements BluetoothAdapter.LeScanCallback{
 
     @Override
     public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-        if (mFilter.filter(device)) {
             String address = device.getAddress();
             String name = device.getName();
             if (TextUtils.isEmpty(name)) {
                 name = RobotUtils.getBLEName(scanRecord);
             }
-            if (mCallback != null) {
+            if (mFilter.filter(name) && mCallback != null) {
                 mCallback.onIronbotFound(new IronbotInfo(name, address));
             }
-        }
     }
 
     /**

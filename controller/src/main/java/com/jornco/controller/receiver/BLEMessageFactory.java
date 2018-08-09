@@ -17,9 +17,9 @@ public class BLEMessageFactory implements IBLEMessageFactory {
     public BLEMessage createBLEMessage(String address, String msg, SparseArray<SensorType> array) {
         BLEMessage message = new BLEMessage(address, msg);
         if (msg != null) {
-            if (msg.startsWith("#F")) {
-                // #F101,1,12,13,*
-                String replace = msg.replaceFirst("#F", "").replace(",*", "");
+            if (msg.startsWith("#K")) {
+                // #K101,1,12,13,*
+                String replace = msg.replaceFirst("#K", "").replace(",*", "");
                 String[] split = replace.split(",");
                 if (split.length >= 3) {
                     // 起码要三个, 第一个为101 表示typeID,  第二个表示端口

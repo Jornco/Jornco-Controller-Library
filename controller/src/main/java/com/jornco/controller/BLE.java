@@ -53,6 +53,9 @@ class BLE extends BluetoothGattCallback {
     // 当前的读写处理
     private IWriterStrategy mCurrentStrategy;
 
+    // 当前蓝牙返回的临时拼接值
+    private String mTmpMsg = "";
+
     BLE(String address, String name, BluetoothDevice device, IronbotRule rule) {
         this.address = address;
         this.name = name;
@@ -128,10 +131,22 @@ class BLE extends BluetoothGattCallback {
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         super.onCharacteristicChanged(gatt, characteristic);
+        // todo: 在这里做接受的传感器返回信息拼接, 因为可能是分段传回来的
         byte[] bytes = mReadBGC.getValue();
         String msg = new String(bytes);
-        mDeviceStateChangeListener.bleDeviceReceive(address, msg);
         BLELog.log("收到设备传来的: " + msg);
+        String tmp;
+        synchronized (this) {
+            if (resolve(msg)) {
+                tmp = this.mTmpMsg;
+                // 记得清空
+                clearMsg();
+            } else {
+                return;
+            }
+        }
+        mDeviceStateChangeListener.bleDeviceReceive(address, tmp);
+        BLELog.log("接受到的信息拼接完成后: " + tmp);
     }
 
     @Override
@@ -220,6 +235,25 @@ class BLE extends BluetoothGattCallback {
     private void changeState(BLEState state) {
         mState = state;
         mDeviceStateChangeListener.bleDeviceStateChange(address, state);
+    }
+
+    private boolean resolve(String msg) {
+        msg = msg.trim();
+        if (this.mTmpMsg.length() == 0 && !msg.startsWith("#") && !msg.startsWith("$")) {
+            // 普通的A B 返回
+            this.mTmpMsg = msg;
+            return true;
+        } else {
+            this.mTmpMsg += msg;
+            if (msg.endsWith("*")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void clearMsg() {
+        mTmpMsg = "";
     }
 }
 

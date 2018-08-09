@@ -177,6 +177,8 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
         }
     }
 
+    // 这一串代码, 要结束了
+    @Deprecated
     void initSensor(List<SensorBean> list) {
         if (list == null) {
             return;
@@ -254,6 +256,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * @param callback  回调
      */
     public void sendMsg(String[] address, final IronbotCode code, final OnIronbotWriteCallback callback) {
+        BLELog.log("发送蓝牙指令: " + code.getData());
         List<byte[]> codes = code.getCodes();
         int size = address.length;
         if (size == 0) {

@@ -15,6 +15,7 @@
 
     <EditText
         android:id="@+id/edit_short_code"
+        android:text="$$K,002,1,**"
         android:layout_width="match_parent"
         android:layout_height="40dp" />
 
