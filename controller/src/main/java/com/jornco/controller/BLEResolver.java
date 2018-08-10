@@ -43,10 +43,12 @@ public class BLEResolver extends IronbotStatus implements OnIronbotWriteCallback
 
         // 如何判断是超时, 不然可能永远不会停
         try {
-            mLatch.await(2000, TimeUnit.MILLISECONDS);
+            // 由于一个包2050个字节， 要分100多次蓝牙发送， 故需要挺久的
+            mLatch.await(100, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        mLatch = null;
 
         if (!this.success) {
             throw new Exception("蓝牙没有返回数据/返回数据与期望值不一致, mExpect = " + mExpect);
@@ -57,7 +59,7 @@ public class BLEResolver extends IronbotStatus implements OnIronbotWriteCallback
     @Override
     public void handBLEMessage(BLEMessage message) {
         super.handBLEMessage(message);
-        BLELog.log("期望数据: " + mExpect + ", 返回数据: " + message);
+        BLELog.log("期望数据: " + mExpect + ", 返回数据: " + message.getMsg());
         if (mLatch != null && mExpect.equals(message.getMsg())) {
             this.success = true;
             mLatch.countDown();
@@ -82,5 +84,12 @@ public class BLEResolver extends IronbotStatus implements OnIronbotWriteCallback
     @Override
     public void onWriterEnd() {
 
+    }
+
+    public void stop() {
+        if (mLatch != null) {
+            onDestroy();
+            mLatch.countDown();
+        }
     }
 }

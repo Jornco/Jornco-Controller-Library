@@ -1,8 +1,7 @@
 package com.jornco.controller.util;
 
-import com.jornco.controller.code.IronbotCode;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -10,17 +9,17 @@ import java.util.List;
  * Created by kkopite on 2018/8/9.
  */
 
-public class UpdateUtil {
+public class UpdateUtils {
 
-    private UpdateUtil() {}
+    private UpdateUtils() {}
 
     /**
      * 将二进制文件组合成2048一个byte[], 带crc验证
      * @param data
      * @return
      */
-    public List<byte[][]> splitDataWithCRC(byte[] data) {
-        List<byte[]> list = IronbotCode.split(data);
+    public static List<byte[][]> splitDataWithCRC(byte[] data) {
+        List<byte[]> list = split(data, 2048);
         List<byte[][]> res = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             byte[] bytes = list.get(i);
@@ -29,12 +28,12 @@ public class UpdateUtil {
         return res;
     }
 
-    private byte[][] createPackage(byte[] bytes, int i) {
+    private static byte[][] createPackage(byte[] bytes, int i) {
         byte[][] res = new byte[2][];
         // 加上2为crc验证
         int len = bytes.length + 2;
 
-        byte[] r1 = new byte[]{0x44, 0x55, (byte) i, (byte) ((len & 0xff00) >> 8),
+        byte[] r1 = new byte[]{0x40, 0x55, (byte) i, (byte) ((len & 0xff00) >> 8),
                 (byte) (len & 0x00ff), 0x2a, 0x2a};
 
         byte[] r2 = new byte[len];
@@ -49,7 +48,7 @@ public class UpdateUtil {
         return res;
     }
 
-    private byte[] crc16(byte[] data, int end) {
+    private static byte[] crc16(byte[] data, int end) {
         int TOPBIT = 0x8000;
         int crc = 0x0000;
 
@@ -65,5 +64,24 @@ public class UpdateUtil {
         }
 
         return new byte[]{(byte) ((crc & 0xFF00) >> 8), (byte) (crc & 0x00FF)};
+    }
+
+    public static List<byte[]> split(byte[] msg, int size) {
+        List<byte[]> codes = new ArrayList<>();
+        int length = msg.length;
+        if (length <= size) {
+            codes.add(msg);
+        } else {
+            int index = 0;
+            while (index < length) {
+                int end = index + size;
+                if (index + size > length) {
+                    end = length;
+                }
+                codes.add(Arrays.copyOfRange(msg, index, end));
+                index += size;
+            }
+        }
+        return codes;
     }
 }

@@ -1,5 +1,8 @@
 package com.jornco.controller;
 
+import com.jornco.controller.util.BLELog;
+import com.jornco.controller.util.UpdateUtils;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,8 +14,8 @@ import java.util.concurrent.Executors;
 public class BLEUpdater implements Runnable {
 
     public static final byte[] START_DOWNLOAD = "@S**".getBytes();
-    public static final String READY = "$ReadyOk";
-    public static final String OK = "$RecOk";
+    public static final String READY = "$ReadyOk*";
+    public static final String OK = "$RecOk*";
     public static final byte[] COMPLETE = "@V**".getBytes();
     public static final String COMPLETE_OK = "$AcceptOk*";
 
@@ -25,22 +28,42 @@ public class BLEUpdater implements Runnable {
     private String script = "";
     private BLEResolver mBLEResolver = new BLEResolver();
     private BLEUpdateListener mBLEUpdateListener = null;
+    private boolean isUpdating = false;
+
+    public synchronized void send(byte[] data, String script, BLEUpdateListener listener) {
+        if (isUpdating) {
+            BLELog.log("当前已经有再更新的了");
+            return;
+        }
+        isUpdating = true;
+        this.script = script;
+        mBLEUpdateListener = listener;
+        mBinData = UpdateUtils.splitDataWithCRC(data);
+        service.submit(this);
+    }
+
     @Override
     public void run() {
         try {
+            mBLEResolver.onStart();
             mBLEResolver.send(START_DOWNLOAD, READY);
             int len = mBinData.size();
             for (int i = 0; i < len; i++) {
                 byte[][] datas = mBinData.get(i);
                 mBLEResolver.send(datas[0]);
 
-                Thread.sleep(50);
+                Thread.sleep(100);
 
                 mBLEResolver.send(datas[1], OK);
 
-                Thread.sleep(50);
+                Thread.sleep(100);
 
                 mBLEUpdateListener.onProgress(i * 100 / len);
+
+                if (!isUpdating) {
+                    BLELog.log("取消");
+                    return;
+                }
             }
 
             mBLEResolver.send(COMPLETE, COMPLETE_OK);
@@ -58,12 +81,20 @@ public class BLEUpdater implements Runnable {
         } catch (Exception e) {
             mBLEUpdateListener.onError(new Error(e));
             e.printStackTrace();
+            return;
+        } finally {
+            mBLEResolver.onDestroy();
+            isUpdating =  false;
         }
-
         mBLEUpdateListener.onSuccess();
     }
 
-    interface BLEUpdateListener {
+    public void stop() {
+        isUpdating = false;
+        mBLEResolver.stop();
+    }
+
+    public interface BLEUpdateListener {
         void onSuccess();
         void onError(Error error);
         void onProgress(int progress);

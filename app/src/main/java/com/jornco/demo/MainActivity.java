@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         put("旧版发送", BLEServiceActivity.class);
         put("新版发送", CodeActivity.class);
         put("监听距离", ListenActivity.class);
+        put("蓝牙更新", UpdateActivity.class);
         put("设置", SettingsActivity.class);
     }};
 
