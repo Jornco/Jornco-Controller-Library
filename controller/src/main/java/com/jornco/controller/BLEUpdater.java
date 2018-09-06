@@ -26,6 +26,11 @@ public class BLEUpdater implements Runnable {
     private List<byte[][]> mBinData = null;
     // 脚本文件
     private String script = "";
+
+    public void setBLEResolver(BLEResolver BLEResolver) {
+        mBLEResolver = BLEResolver;
+    }
+
     private BLEResolver mBLEResolver = new BLEResolver();
     private BLEUpdateListener mBLEUpdateListener = null;
     private boolean isUpdating = false;
@@ -40,6 +45,19 @@ public class BLEUpdater implements Runnable {
         mBLEUpdateListener = listener;
         mBinData = UpdateUtils.splitDataWithCRC(data);
         service.submit(this);
+    }
+
+    // 直接在该线程执行, 只是为了说方便同步测试
+    public void test(byte[] data, String script, BLEUpdateListener listener) {
+        if (isUpdating) {
+            BLELog.log("当前已经有再更新的了");
+            return;
+        }
+        isUpdating = true;
+        this.script = script;
+        mBLEUpdateListener = listener;
+        mBinData = UpdateUtils.splitDataWithCRC(data);
+        this.run();
     }
 
     @Override

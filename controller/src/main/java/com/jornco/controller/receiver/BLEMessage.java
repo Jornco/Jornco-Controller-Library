@@ -56,5 +56,11 @@ public class BLEMessage {
         return address;
     }
 
-
+    @Override
+    public String toString() {
+        return "BLEMessage{" +
+                "address='" + address + '\'' +
+                ", msg='" + msg + '\'' +
+                '}';
+    }
 }

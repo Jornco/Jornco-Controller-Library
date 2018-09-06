@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.os.Build;
 
 import com.jornco.controller.ble.BLEState;
 import com.jornco.controller.ble.IronbotRule;
@@ -90,12 +91,17 @@ class BLE extends BluetoothGattCallback {
             return;
         }
         changeState(BLEState.CONNECTING);
-        mGatt = device.connectGatt(context, false, this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mGatt = device.connectGatt(context, false, this, BluetoothDevice.TRANSPORT_LE);
+        } else {
+            mGatt = device.connectGatt(context, false, this);
+        }
     }
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         super.onConnectionStateChange(gatt, status, newState);
+        BLELog.log("之前状态: " + status + "连接状态: " + newState);
         if (newState == BluetoothProfile.STATE_CONNECTED) {
             BLELog.log(address + "连接成功");
             boolean res = gatt.discoverServices();

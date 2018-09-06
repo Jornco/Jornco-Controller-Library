@@ -18,6 +18,11 @@ import java.util.concurrent.TimeUnit;
 public class BLEResolver extends IronbotStatus implements OnIronbotWriteCallback {
 
     private String mExpect;
+
+    public void setController(IronbotController controller) {
+        mController = controller;
+    }
+
     private IronbotController mController = new IronbotController();
     private CountDownLatch mLatch;
     private boolean success = false;
@@ -36,14 +41,15 @@ public class BLEResolver extends IronbotStatus implements OnIronbotWriteCallback
             mController.sendMsg(IronbotCode.create(cmd), null);
             return;
         }
+
         this.mExpect = expect;
         this.success = false;
-        mController.sendMsg(IronbotCode.create(cmd), this);
         mLatch = new CountDownLatch(1);
-
+        mController.sendMsg(IronbotCode.create(cmd), this);
         // 如何判断是超时, 不然可能永远不会停
         try {
             // 由于一个包2050个字节， 要分100多次蓝牙发送， 故需要挺久的
+            // 也太尼玛就了
             mLatch.await(100, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
