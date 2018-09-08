@@ -19,5 +19,5 @@ public interface IronbotWriterCallback {
      * @param data    发送失败的数据
      * @param error   详情
      */
-    void writerFailure(String address, String data, BLEWriterError error);
+    void writerFailure(String address, byte[] data, BLEWriterError error);
 }

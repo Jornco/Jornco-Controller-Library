@@ -1,4 +1,4 @@
-package com.jornco.demo.adapter;
+package com.jornco.controller;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
@@ -8,31 +8,28 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.jornco.controller.util.BLELog;
 import com.jornco.controller.ble.BLEState;
-import com.jornco.controller.IronbotController;
 import com.jornco.controller.ble.IronbotInfo;
-import com.jornco.controller.IronbotSearcher;
 import com.jornco.controller.ble.OnIronbotWriteCallback;
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
+import com.jornco.controller.util.BLELog;
 import com.jornco.controller.util.RobotUtils;
-import com.jornco.demo.R;
 
 import java.util.List;
 
 /**
- * Created by kkopite on 2017/10/25.
+ * Created by kkopite on 2018/4/4.
  */
 
-public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> implements OnBLEDeviceStatusChangeListener {
+public class BLEAdapter extends RecyclerView.Adapter<BLEAdapter.VH> implements OnBLEDeviceStatusChangeListener {
 
     private Activity context;
     private List<IronbotInfo> mItems;
     private IronbotSearcher mSearcher;
 
-    public RobotInfoAdapter(Activity context, List<IronbotInfo> mItems, IronbotSearcher searcher) {
+    public BLEAdapter(Activity context, List<IronbotInfo> mItems, IronbotSearcher searcher) {
         this.context = context;
         this.mItems = mItems;
         mSearcher = searcher;
@@ -40,7 +37,7 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.VH> 
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new VH(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ble, parent, false));
+        return new VH(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycleview_item_ble, parent, false));
     }
 
     @Override

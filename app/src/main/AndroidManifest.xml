@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.jornco.demo">
+          package="com.jornco.demo">
 
     <application
         android:allowBackup="true"
@@ -8,29 +8,47 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:testOnly="false"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".OldActivity" />
-        <activity android:name=".NewActivity" />
-        <activity android:name=".CodeActivity" />
+        <activity
+            android:name=".SearchActivity"
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".OldActivity"
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".NewActivity"
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".CodeActivity"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jornco.demo.MainActivity" />
+                android:value="com.jornco.demo.MainActivity"/>
         </activity>
-        <activity android:name=".SendActivity" />
-        <activity android:name=".BLEServiceActivity" />
-        <activity android:name=".AISearchActivity"></activity>
+        <activity
+            android:name=".SendActivity"
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".BLEServiceActivity"
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".activity.ListenActivity"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity android:name=".UpdateActivity">
+        </activity>
     </application>
 
 </manifest>

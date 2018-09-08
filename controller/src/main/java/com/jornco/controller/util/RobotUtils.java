@@ -6,6 +6,9 @@ package com.jornco.controller.util;
 
 public class RobotUtils {
 
+    private static final String RS_BLE_BYTES = new String(new byte[]{0x07, 0x09, 0x52, 0x53, 0x2D, 0x42, 0x4c, 0x45});
+    private static final String RS_BLE = "RS-BLE";
+
     /**
      *
      * @param min 最小值
@@ -30,5 +33,18 @@ public class RobotUtils {
      */
     public static String getCmd() {
         return "#B" + getRandom() + "," + getRandom() + "," + getRandom() +",*";
+    }
+
+    /**
+     * HACKER 从蓝牙广播中, 获取蓝牙名称
+     * @param scanRecord 广播
+     * @return 蓝牙名称
+     */
+    public static String getBLEName(byte[] scanRecord) {
+        String t = new String(scanRecord);
+        if (t.contains(RS_BLE_BYTES)) {
+            return RS_BLE;
+        }
+        return "";
     }
 }

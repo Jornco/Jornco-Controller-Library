@@ -2,11 +2,13 @@ package com.jornco.controller;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.text.TextUtils;
 
 import com.jornco.controller.ble.IronbotInfo;
 import com.jornco.controller.scan.IronbotFilter;
 import com.jornco.controller.scan.IronbotSearcherCallback;
 import com.jornco.controller.util.BLELog;
+import com.jornco.controller.util.RobotUtils;
 
 /**
  * Created by kkopite on 2017/12/21.
@@ -38,13 +40,14 @@ class BLEScan implements BluetoothAdapter.LeScanCallback{
 
     @Override
     public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-        if (mFilter.filter(device)) {
             String address = device.getAddress();
             String name = device.getName();
-            if (mCallback != null) {
+            if (TextUtils.isEmpty(name)) {
+                name = RobotUtils.getBLEName(scanRecord);
+            }
+            if (mFilter.filter(name) && mCallback != null) {
                 mCallback.onIronbotFound(new IronbotInfo(name, address));
             }
-        }
     }
 
     /**

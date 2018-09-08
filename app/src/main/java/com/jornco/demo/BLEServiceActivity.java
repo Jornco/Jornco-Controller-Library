@@ -89,4 +89,12 @@ public class BLEServiceActivity extends AppCompatActivity implements BLEReceiver
         }
         mBinder.sendMsg(IronbotCode.create(msg), null);
     }
+
+    @Override
+    public void send(byte[] msg) {
+        if (mBinder == null) {
+            return;
+        }
+        mBinder.sendMsg(IronbotCode.create(msg), null);
+    }
 }

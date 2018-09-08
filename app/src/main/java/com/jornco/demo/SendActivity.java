@@ -47,4 +47,9 @@ public class SendActivity extends AppCompatActivity implements IBLESend {
     public void send(String msg) {
         mController.sendMsg(IronbotCode.create(msg), null);
     }
+
+    @Override
+    public void send(byte[] msg) {
+        mController.sendMsg(IronbotCode.create(msg), null);
+    }
 }

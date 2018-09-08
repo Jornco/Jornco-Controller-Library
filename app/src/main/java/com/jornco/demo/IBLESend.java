@@ -7,4 +7,6 @@ package com.jornco.demo;
 public interface IBLESend {
 
     void send(String msg);
+
+    void send(byte[] msg);
 }

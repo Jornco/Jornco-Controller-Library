@@ -3,17 +3,24 @@ package com.jornco.controller;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.text.TextUtils;
+import android.util.SparseArray;
 
 import com.jornco.controller.ble.BLEState;
+import com.jornco.controller.ble.DataType;
 import com.jornco.controller.ble.IronbotInfo;
 import com.jornco.controller.ble.IronbotRule;
 import com.jornco.controller.ble.IronbotWriterCallback;
 import com.jornco.controller.ble.OnBLEDeviceChangeListener;
 import com.jornco.controller.ble.OnIronbotWriteCallback;
+import com.jornco.controller.ble.SensorBean;
+import com.jornco.controller.ble.SensorType;
 import com.jornco.controller.code.IronbotCode;
 import com.jornco.controller.error.BLEWriterError;
 import com.jornco.controller.receiver.BLEMessage;
+import com.jornco.controller.receiver.BLEMessageFactory;
 import com.jornco.controller.receiver.BLEReceiver;
+import com.jornco.controller.receiver.IBLEMessageFactory;
 import com.jornco.controller.scan.OnBLEDeviceStatusChangeListener;
 import com.jornco.controller.util.BLELog;
 
@@ -68,8 +75,16 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     // 已连接设备
     private Map<String, BLE> mConnectedBLE = new HashMap<>();
 
+    // 端口对应传感器
+    private SparseArray<SensorType> mSensorTypeMap = new SparseArray<>();
+
+    // 输出传感器对应端口
+    private Map<SensorType, Integer> mSendSensorTypeIntegerMap = new HashMap<>();
+
     // 接受消息处理回调
     private CopyOnWriteArraySet<BLEReceiver> mReceivers = new CopyOnWriteArraySet<>();
+
+    private IBLEMessageFactory mFactory = new BLEMessageFactory();
 
     void setRule(IronbotRule rule) {
         this.mRule = rule;
@@ -87,10 +102,15 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * 连接
      * @param context   上下文
      * @param address   地址
+     * @param name 设备名称
      */
-    void connect(Context context, String address) {
+    void connect(Context context, String address, String name) {
         BluetoothDevice device = mAdapter.getRemoteDevice(address);
-        BLE info = new BLE(address, device.getName(), device, mRule);
+        String tmpName = device.getName();
+        if (TextUtils.isEmpty(tmpName)) {
+            tmpName = name;
+        }
+        BLE info = new BLE(address, tmpName, device, mRule);
         mConnectedBLE.put(info.getAddress(), info);
         info.connect(context, this);
     }
@@ -110,13 +130,17 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
         device.disconnect();
     }
 
+    Map<SensorType, Integer> getSendSensorTypeIntegerMap() {
+        return mSendSensorTypeIntegerMap;
+    }
+
     /**
      * 发送消息, 需要上层做同步
      * @param address   地址
      * @param cmd       指令
      * @param callback  回调
      */
-    void sendMsg(String address, String cmd, IronbotWriterCallback callback) {
+    void sendMsg(String address, byte[] cmd, IronbotWriterCallback callback) {
         BLE device = mConnectedBLE.get(address);
         if (device == null) {
             callback.writerFailure(address, cmd, new BLEWriterError(address, cmd, "该设备未连接"));
@@ -143,7 +167,8 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
 
     @Override
     public void bleDeviceReceive(String address, String msg) {
-        BLEMessage message = new BLEMessage(address, msg);
+//        BLEMessage message = new BLEMessage(address, msg);
+        BLEMessage message = mFactory.createBLEMessage(address, msg, mSensorTypeMap);
         // 在这里组合出接收到的信息, 发出去
         for (BLEReceiver mReceiver : mReceivers) {
             if (mReceiver.onReceiveBLEMessage(message)) {
@@ -151,6 +176,47 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
             }
         }
     }
+
+    // 这一串代码, 要结束了
+    @Deprecated
+    void initSensor(List<SensorBean> list) {
+        if (list == null) {
+            return;
+        }
+        SparseArray<SensorBean> sparseArray = new SparseArray<>();
+        for (SensorBean sensorBean : list) {
+            sparseArray.put(sensorBean.getPort(), sensorBean);
+        }
+
+        // 清空之前的
+        mSendSensorTypeIntegerMap.clear();
+        mSensorTypeMap.clear();
+        StringBuilder sb = new StringBuilder();
+        sb.append("#E");
+        // 设置好对应端口对应的传感器
+        for (int i = 0; i < 6; i++) {
+            SensorBean bean = sparseArray.get(i);
+            String typeId = "0";
+            if (bean != null) {
+                SensorType type = bean.getType();
+                int port = bean.getPort();
+                typeId = type.getTypeId();
+
+                // 记录那个端口对应哪个传感器
+                if (type.getDataType() == DataType.REC) {
+                    mSensorTypeMap.put(port, type);
+                } else if (type.getDataType() == DataType.SEND){
+                    mSendSensorTypeIntegerMap.put(type, port);
+                }
+            }
+            sb.append(typeId).append(",");
+        }
+        sb.append("*");
+        BLELog.log("初始化传感器: " + sb.toString());
+        // 发送
+        sendMsg(IronbotCode.create(sb.toString()), null);
+    }
+
 
     /**
      * 当前是否在发送
@@ -190,11 +256,12 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * @param callback  回调
      */
     public void sendMsg(String[] address, final IronbotCode code, final OnIronbotWriteCallback callback) {
-        List<String> codes = code.getCodes();
+        BLELog.log("发送蓝牙指令: " + code.getData());
+        List<byte[]> codes = code.getCodes();
         int size = address.length;
         if (size == 0) {
             if (callback != null) {
-                callback.onWriterFailure("", new BLEWriterError("", "", "没有要发送的设备地址或者没有连接的设备"));
+                callback.onWriterFailure("", new BLEWriterError("", BLEConstants.EMPTY_DATA, "没有要发送的设备地址或者没有连接的设备"));
                 callback.onAllDeviceFailure();
                 callback.onWriterEnd();
             }
@@ -260,7 +327,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     private static class WriteData {
 
         // 要发的数据
-        private String data;
+        private byte[] data;
 
         // 要发的地址
         private String[] address;

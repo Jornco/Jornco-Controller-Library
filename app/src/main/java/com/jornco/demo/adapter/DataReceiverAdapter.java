@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.jornco.controller.IronbotStatus;
 import com.jornco.controller.receiver.BLEMessage;
+import com.jornco.controller.util.BLELog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +81,7 @@ public class DataReceiverAdapter extends BaseAdapter {
         @Override
         public boolean onReceiveBLEMessage(BLEMessage message) {
             data.add(message.getMsg());
+            BLELog.log(message.getMsg() + "收到");
             mContext.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
