@@ -166,9 +166,10 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     }
 
     @Override
-    public void bleDeviceReceive(String address, String msg) {
+    public void bleDeviceReceive(String address, byte[] msg) {
 //        BLEMessage message = new BLEMessage(address, msg);
-        BLEMessage message = mFactory.createBLEMessage(address, msg, mSensorTypeMap);
+//        BLEMessage message = mFactory.createBLEMessage(address, msg, mSensorTypeMap);
+        BLEMessage message = mFactory.createTuckBLEMessage(address, msg);
         // 在这里组合出接收到的信息, 发出去
         for (BLEReceiver mReceiver : mReceivers) {
             if (mReceiver.onReceiveBLEMessage(message)) {
