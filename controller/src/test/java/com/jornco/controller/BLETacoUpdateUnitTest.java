@@ -95,12 +95,12 @@ public class BLETacoUpdateUnitTest {
         final int[] tmp = {1};
         mBLETacoUpdater.startUpdate(this.updateData, new BLETacoUpdater.OnTacoUpdateListener() {
             @Override
-            public void onStart() {
+            public void onTacoUpdateStart() {
 
             }
 
             @Override
-            public void onProgress(int index, int size) {
+            public void onTacoUpdateProgress(int index, int size) {
                 System.out.println(index + ", " + size);
                 assertEquals(tmp[0], index);
                 if (tmp[0] < size) {
@@ -110,7 +110,7 @@ public class BLETacoUpdateUnitTest {
             }
 
             @Override
-            public void onComplete() {
+            public void onTacoUpdateComplete() {
 
             }
         });

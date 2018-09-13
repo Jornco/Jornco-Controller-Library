@@ -144,6 +144,29 @@ public class TuckMessageUtils {
         return new byte[]{(byte) (num & 0xFF), (byte) (num >> 8)};
     }
 
-    // TODO: 在线脚本下载, 清除脚本, 临时脚本等
+    public static byte[] onlineScript(int index, String script) {
+        // TODO: 脚本的长度不会大于2000检查
+
+        // step 1 分成 255长度的data
+        byte[][] data = UpdateUtils.splitWithLen(script.getBytes(), 0xFF);
+        byte[][] target = new byte[data.length + 2][];
+        target[0] = new byte[]{(byte) index};
+        target[1] = new byte[]{(byte) data.length};
+        System.arraycopy(data, 0, target, 2, data.length);
+        return createCMD(BLEConstant.CMD_DOWNLOAD_TMP_SCRIPT, target);
+        // 合成
+    }
+
+    public static byte[] tmpScript(String script) {
+        byte[][] data = UpdateUtils.splitWithLen(script.getBytes(), 0xFF);
+        byte[][] target = new byte[data.length + 1][];
+        target[0] = new byte[]{(byte) data.length};
+        System.arraycopy(data, 0, target, 1, data.length);
+        return createCMD(BLEConstant.CMD_DOWNLOAD_TMP_SCRIPT, target);
+    }
+
+    public static byte[] clearScript(int index) {
+        return createCMD(BLEConstant.CMD_CLEAR_SCRIPT, new byte[]{(byte) index});
+    }
     // TODO: 中控升级
 }

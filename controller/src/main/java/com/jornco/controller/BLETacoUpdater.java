@@ -39,7 +39,7 @@ public class BLETacoUpdater extends IronbotStatus implements OnIronbotWriteCallb
         isUpdating = true;
         onStart();
         if (mOnTacoUpdateListener != null) {
-            mOnTacoUpdateListener.onStart();
+            mOnTacoUpdateListener.onTacoUpdateStart();
         }
         this.update(0);
     }
@@ -58,11 +58,11 @@ public class BLETacoUpdater extends IronbotStatus implements OnIronbotWriteCallb
             isUpdating = false;
             // 结束了
             if (mOnTacoUpdateListener != null) {
-                mOnTacoUpdateListener.onComplete();
+                mOnTacoUpdateListener.onTacoUpdateComplete();
             }
         } else {
             if (mOnTacoUpdateListener != null) {
-                mOnTacoUpdateListener.onProgress(index + 1, size);
+                mOnTacoUpdateListener.onTacoUpdateProgress(index + 1, size);
             }
             int from = index * MAX;
             int to = from + MAX;
@@ -100,6 +100,7 @@ public class BLETacoUpdater extends IronbotStatus implements OnIronbotWriteCallb
             return;
         }
         int index = Integer.parseInt(recData[0]);
+        BLELog.log("第" + index + "个发送完毕, 总共有" + size + "个包");
         this.update(index + 1);
     }
 
@@ -124,9 +125,9 @@ public class BLETacoUpdater extends IronbotStatus implements OnIronbotWriteCallb
     }
 
     public interface OnTacoUpdateListener {
-        void onStart();
-        void onProgress(int index, int size);
-        void onComplete();
+        void onTacoUpdateStart();
+        void onTacoUpdateProgress(int index, int size);
+        void onTacoUpdateComplete();
     }
 
 }
