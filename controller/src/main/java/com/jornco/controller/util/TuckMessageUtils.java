@@ -24,7 +24,11 @@ public class TuckMessageUtils {
         // 和校验 1
         int len = header.length + 2 + 1 + tail.length + 1;
         for (byte[] data : datas) {
-            if (data.length > 0)  {
+            if (data.length > 0) {
+                if (data.length > 255) {
+                    // 每个单元的长度字节只占一位
+                    throw new IllegalArgumentException("data 长度不能大于 255");
+                }
                 len += data.length + 1;
             }
         }
@@ -73,4 +77,73 @@ public class TuckMessageUtils {
         }
         return (byte) (last & 0xFF);
     }
+
+    /**
+     * 生成回应蓝牙的 成功 或失败
+     *
+     * @param cmd 指令
+     * @param ok  0 或 1
+     * @return 生成完整返回数据
+     */
+    public static byte[] createACKData(byte cmd, byte ok) {
+        if (ok != 0x01 & ok != 0x00) {
+            // 貌似也没必要抛出错误恩
+            throw new IllegalArgumentException("ok 只能是0 或 1");
+        }
+        return createCMD(cmd, new byte[]{ok});
+    }
+
+    /**
+     * 生成led灯指令
+     *
+     * @param repeat      重复次数(0x01~0xFE), 关灯 0x00, 永久 0xFF
+     * @param onInterval  灯亮时长
+     * @param offInterval 灭灯时长
+     * @return 数据
+     */
+    public static byte[] createLEDData(byte repeat, byte onInterval, byte offInterval) {
+        return createCMD(BLEConstant.CMD_LED, new byte[]{repeat}, new byte[]{onInterval}, new byte[]{offInterval});
+    }
+
+    /**
+     * 无限次数
+     *
+     * @param onInterval  灯亮时长
+     * @param offInterval 灭灯时长
+     * @return 数据
+     */
+    public static byte[] createLEDData(byte onInterval, byte offInterval) {
+        return createLEDData((byte) 0xFF, onInterval, offInterval);
+    }
+
+    public static byte[] offLed() {
+        return createLEDData(((byte) 0x00), ((byte) 0x01), ((byte) 0x01));
+    }
+
+    // TODO: 又是角度 又是速度的?
+    public static byte[] createServoData(byte num, byte angle, byte speed) {
+        return null;
+    }
+
+    /**
+     * 查询主控信息
+     *
+     * @return 数据
+     */
+    public static byte[] queryControlMessage() {
+        return createCMD(BLEConstant.CMD_CONTROL_MESSAGE);
+    }
+
+    /**
+     * Todo: 写测试!!!!
+     * 生成一个两位的byte[], 小端
+     * @param num
+     * @return
+     */
+    public static byte[] generateTwo(int num) {
+        return new byte[]{(byte) (num & 0xFF), (byte) (num >> 8)};
+    }
+
+    // TODO: 在线脚本下载, 清除脚本, 临时脚本等
+    // TODO: 中控升级
 }

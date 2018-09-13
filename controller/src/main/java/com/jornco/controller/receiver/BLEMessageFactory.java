@@ -38,8 +38,7 @@ public class BLEMessageFactory implements IBLEMessageFactory {
     @Override
     public BLEMessage createTuckBLEMessage(String address, byte[] data) {
         BLEMessage message = new BLEMessage(address, data);
-        // 这里必须是 US-ASCII, 单字节取的, 不然会出错哟
-        int len = data[3] + (data[4] << 8);
+        int len = (data[3] & 0xFF) + ((data[4] & 0xFF) << 8);
         String error = "";
         if (data.length != len) {
             error = "返回信息的长度不正确: [真实长度: " + data.length + ", 应有长度: " + len + "]";
@@ -66,7 +65,7 @@ public class BLEMessageFactory implements IBLEMessageFactory {
 //        message.setRecData((String[]) recData.toArray());
 
         message.setRecData(parseData(message.getCMDType(), Arrays.copyOfRange(data, 6, data.length - 4)));
-
+        message.setPackageLen(len);
         return message;
     }
 
@@ -80,11 +79,12 @@ public class BLEMessageFactory implements IBLEMessageFactory {
      * @return 数据
      */
     private String[] parseData(byte type, byte[] data) {
+        // byte的值可能是负的, 故要用上  & 0xFF, 来将 -128~127 转成 0~255
         int d = 0;
         switch (type) {
             case BLEConstant.CMD_DISTANCE:
             case BLEConstant.CMD_CONTROL_UPGRADE:
-                d = (data[2] << 8) + data[1];
+                d = ((data[2] & 0xFF) << 8) + (data[1] & 0xFF);
                 return new String[]{String.valueOf(d)};
             case BLEConstant.CMD_VOICE_LEVEL:
             case BLEConstant.CMD_KEY_INDEX:
@@ -102,7 +102,7 @@ public class BLEMessageFactory implements IBLEMessageFactory {
             case BLEConstant.CMD_CONTROL_MESSAGE:
                 // 如 3 a b c 1 0
                 // 主控查询, 第一个单元是软件版本, 第二个是控制模式, 即在线(0), 离线(1)
-                int len = data[0];
+                int len = data[0] & 0xFF;
                 String version = new String(Arrays.copyOfRange(data, 1, len + 1));
                 int mode = data[2 + len];
                 return new String[]{version, String.valueOf(mode)};

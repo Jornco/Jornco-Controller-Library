@@ -22,6 +22,9 @@ public class BLEMessage {
     private int port;
     private String[] recData;
 
+    // 从返回的数据中分析出来的长度, 与msg的长度去做比较
+    private int mPackageLen;
+
     public SensorType getType() {
         return mType;
     }
@@ -85,4 +88,14 @@ public class BLEMessage {
                 ", recData=" + Arrays.toString(recData) +
                 '}';
     }
+
+    public void setPackageLen(int packageLen) {
+        mPackageLen = packageLen;
+    }
+
+    public int getPackageLen() {
+        return mPackageLen;
+    }
+
+
 }

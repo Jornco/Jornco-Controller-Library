@@ -60,6 +60,7 @@ public class MessageUnitTest {
         }
     }
 
+    // 解析是否正确
     @Test
     public void parseMessage_isCorrect() {
         IBLEMessageFactory factory = new BLEMessageFactory();
@@ -69,19 +70,27 @@ public class MessageUnitTest {
         assertEquals(message.getCMDType(), BLEConstant.CMD_SERVO);
         // 没有错误信息
         assertEquals(message.getErrorMsg(), "");
+        assertEquals(message.getPackageLen(), data.length);
 
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 200; i++) {
+            sb.append("a");
+        }
+        String version = sb.toString();
         // 测试接受返回的主控信息是否正确
-        data = TuckMessageUtils.createCMD(BLEConstant.CMD_CONTROL_MESSAGE, "abc".getBytes(), new byte[]{ 0x00 });
+        data = TuckMessageUtils.createCMD(BLEConstant.CMD_CONTROL_MESSAGE, version.getBytes(), new byte[]{ 0x00 });
         message = factory.createTuckBLEMessage("123", data);
         String[] recData = message.getRecData();
-        assertEquals(recData[0], "abc");
+        assertEquals(recData[0], version);
         assertEquals(recData[1], "0");
+        assertEquals(message.getPackageLen(), data.length);
 
         // 测试返回的距离信息是否正确
         data = TuckMessageUtils.createCMD(BLEConstant.CMD_DISTANCE, new byte[]{ 0x10, 0x20 });
         message = factory.createTuckBLEMessage("132", data);
         recData = message.getRecData();
         assertEquals(recData[0], "8208");
+        assertEquals(message.getPackageLen(), data.length);
     }
 
     // 检测拼接是否正常
