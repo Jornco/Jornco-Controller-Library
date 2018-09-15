@@ -379,5 +379,8 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
         for (OnBLEDeviceStatusChangeListener mDeviceStatusChangeListener : mDeviceStatusChangeListeners) {
             mDeviceStatusChangeListener.bleDeviceStateChange(address, state);
         }
+        if (state == BLEState.DISCONNECT) {
+           mConnectedBLE.remove(address);
+        }
     }
 }

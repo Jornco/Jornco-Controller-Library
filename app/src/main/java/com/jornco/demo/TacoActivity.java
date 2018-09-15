@@ -23,7 +23,7 @@ import com.jornco.demo.util.FileUtils;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class TacoActivity extends AppCompatActivity implements View.OnClickListener, BLETacoUpdater.OnTacoUpdateListener {
+public class TacoActivity extends AppCompatActivity implements View.OnClickListener, BLETacoUpdater.OnTacoUpdateListener{
 
     private Button mBtnUpdate;
 
@@ -39,7 +39,7 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mTvVersionMode;
     private Button mBtnCtrl;
     private EditText mTvScriptIndex;
-    private Button mBtnOnlineScript = (Button) findViewById(R.id.btn_online_script);
+    private Button mBtnOnlineScript;
     private Button mBtnClearScript;
     private Button mBtnTmpScript;
     private EditText mTvLedCount;
@@ -55,6 +55,9 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
 
     private TacoReceiver mReceiver = new TacoReceiver();
     private ProgressBar mProgressBarUpdate;
+    private EditText mEditServoSide;
+    private EditText mEditServoAction;
+    private Button mBtnServoWalk;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +86,7 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initView() {
         mBtnUpdate = findViewById(R.id.btn_update);
-
+        mBtnOnlineScript = findViewById(R.id.btn_online_script);
         mBtnUpdate.setOnClickListener(this);
         mBtnStopUpdate = findViewById(R.id.btn_stop_update);
         mBtnStopUpdate.setOnClickListener(this);
@@ -128,6 +131,12 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
         mBtnServo.setOnClickListener(this);
         mProgressBarUpdate = findViewById(R.id.progress_bar_update);
         mProgressBarUpdate.setOnClickListener(this);
+        mEditServoSide = (EditText) findViewById(R.id.edit_servo_side);
+        mEditServoSide.setOnClickListener(this);
+        mEditServoAction = (EditText) findViewById(R.id.edit_servo_action);
+        mEditServoAction.setOnClickListener(this);
+        mBtnServoWalk = (Button) findViewById(R.id.btn_servo_walk);
+        mBtnServoWalk.setOnClickListener(this);
     }
 
     @Override
@@ -157,6 +166,9 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_servo:
                 data = TuckMessageUtils.createServoData(getServoIndex(), getServoAngle(), getServoSpeed());
+                break;
+            case R.id.btn_servo_walk:
+                submit();
                 break;
         }
         if (data != null) {
@@ -285,6 +297,28 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
             return 50;
         }
         return (byte) s;
+    }
+
+    private void submit() {
+        // validate
+        String side = mEditServoSide.getText().toString().trim();
+        if (TextUtils.isEmpty(side)) {
+            Toast.makeText(this, "电机", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String action = mEditServoAction.getText().toString().trim();
+        if (TextUtils.isEmpty(action)) {
+            Toast.makeText(this, "动作", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        byte s = (byte) Integer.parseInt(side);
+        byte a = (byte) Integer.parseInt(action);
+
+        byte[] data = TuckMessageUtils.createServoWalk(s, a);
+        mController.sendMsg(IronbotCode.create(data), null);
+
     }
 
     private class TacoReceiver extends IronbotStatus {

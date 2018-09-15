@@ -16,6 +16,33 @@
         android:padding="8dp">
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/edit_servo_side"
+                android:layout_width="50dp"
+                android:hint="电机"
+                android:inputType="number"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:hint="动作"
+                android:inputType="number"
+                android:id="@+id/edit_servo_action"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btn_servo_walk"
+                android:text="电机行走"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
