@@ -97,7 +97,7 @@ public class BLEMessageFactory implements IBLEMessageFactory {
             case BLEConstant.CMD_CLEAR_SCRIPT:
             case BLEConstant.CMD_DOWNLOAD_TMP_SCRIPT:
                 // 以上几个都是返回单个 一位长度的数据
-                d = data[1];
+                d = data[1] & 0xFF;
                 return new String[]{String.valueOf(d)};
             case BLEConstant.CMD_CONTROL_MESSAGE:
                 // 如 3 a b c 1 0

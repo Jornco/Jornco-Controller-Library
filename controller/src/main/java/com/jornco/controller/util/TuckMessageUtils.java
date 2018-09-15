@@ -122,7 +122,7 @@ public class TuckMessageUtils {
 
     // TODO: 又是角度 又是速度的?
     public static byte[] createServoData(byte num, byte angle, byte speed) {
-        return null;
+        return createCMD(BLEConstant.CMD_SERVO, new byte[]{num}, new byte[]{angle}, new byte[]{speed});
     }
 
     /**
@@ -137,6 +137,7 @@ public class TuckMessageUtils {
     /**
      * Todo: 写测试!!!!
      * 生成一个两位的byte[], 小端
+     *
      * @param num
      * @return
      */
@@ -144,11 +145,11 @@ public class TuckMessageUtils {
         return new byte[]{(byte) (num & 0xFF), (byte) (num >> 8)};
     }
 
-    public static byte[] onlineScript(int index, String script) {
+    public static byte[] onlineScript(int index, byte[] script) {
         // TODO: 脚本的长度不会大于2000检查
 
         // step 1 分成 255长度的data
-        byte[][] data = UpdateUtils.splitWithLen(script.getBytes(), 0xFF);
+        byte[][] data = UpdateUtils.splitWithLen(script, 0xFF);
         byte[][] target = new byte[data.length + 2][];
         target[0] = new byte[]{(byte) index};
         target[1] = new byte[]{(byte) data.length};
@@ -157,8 +158,8 @@ public class TuckMessageUtils {
         // 合成
     }
 
-    public static byte[] tmpScript(String script) {
-        byte[][] data = UpdateUtils.splitWithLen(script.getBytes(), 0xFF);
+    public static byte[] tmpScript(byte[] script) {
+        byte[][] data = UpdateUtils.splitWithLen(script, 0xFF);
         byte[][] target = new byte[data.length + 1][];
         target[0] = new byte[]{(byte) data.length};
         System.arraycopy(data, 0, target, 1, data.length);
