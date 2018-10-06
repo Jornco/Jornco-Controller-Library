@@ -23,7 +23,7 @@ import com.jornco.demo.util.FileUtils;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class TacoActivity extends AppCompatActivity implements View.OnClickListener, BLETacoUpdater.OnTacoUpdateListener{
+public class TacoActivity extends AppCompatActivity implements View.OnClickListener, BLETacoUpdater.OnTacoUpdateListener {
 
     private Button mBtnUpdate;
 
@@ -58,6 +58,7 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
     private EditText mEditServoSide;
     private EditText mEditServoAction;
     private Button mBtnServoWalk;
+    private EditText edit_script;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +138,8 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
         mEditServoAction.setOnClickListener(this);
         mBtnServoWalk = (Button) findViewById(R.id.btn_servo_walk);
         mBtnServoWalk.setOnClickListener(this);
+        edit_script = (EditText) findViewById(R.id.edit_script);
+        edit_script.setOnClickListener(this);
     }
 
     @Override
@@ -153,12 +156,14 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
                 data = TuckMessageUtils.queryControlMessage();
                 break;
             case R.id.btn_online_script:
+                script = getScript().getBytes();
                 data = TuckMessageUtils.onlineScript(getScriptIndex(), script);
                 break;
             case R.id.btn_clear_script:
                 data = TuckMessageUtils.clearScript(getScriptIndex());
                 break;
             case R.id.btn_tmp_script:
+                script = getScript().getBytes();
                 data = TuckMessageUtils.tmpScript(script);
                 break;
             case R.id.btn_led:
@@ -319,6 +324,18 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
         byte[] data = TuckMessageUtils.createServoWalk(s, a);
         mController.sendMsg(IronbotCode.create(data), null);
 
+    }
+
+    private String getScript() {
+        // validate
+        String script = edit_script.getText().toString().trim();
+        if (TextUtils.isEmpty(script)) {
+            Toast.makeText(this, "输入要发送的脚本", Toast.LENGTH_SHORT).show();
+            return "";
+        }
+
+        // TODO validate success, do something
+        return script;
     }
 
     private class TacoReceiver extends IronbotStatus {

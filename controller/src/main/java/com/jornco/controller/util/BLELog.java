@@ -1,5 +1,7 @@
 package com.jornco.controller.util;
 
+import android.util.Log;
+
 import com.jornco.controller.BuildConfig;
 
 /**
@@ -13,7 +15,7 @@ public class BLELog {
 
     public static void log(String msg) {
         if (BuildConfig.DEBUG) {
-//            Log.e(TAG, "log: " + msg);
+            Log.e(TAG, "log: " + msg);
 //            System.out.println(msg);
         }
     }
