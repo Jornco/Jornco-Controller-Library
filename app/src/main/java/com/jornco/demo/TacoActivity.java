@@ -23,7 +23,7 @@ import com.jornco.demo.util.FileUtils;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class TacoActivity extends AppCompatActivity implements View.OnClickListener, BLETacoUpdater.OnTacoUpdateListener {
+public class TacoActivity extends AppCompatActivity implements View.OnClickListener, BLETacoUpdater.OnTacoUpdateListener{
 
     private Button mBtnUpdate;
 
@@ -59,6 +59,8 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
     private EditText mEditServoAction;
     private Button mBtnServoWalk;
     private EditText edit_script;
+    private EditText edit_script_index;
+    private Button btn_exec_script;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +142,10 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
         mBtnServoWalk.setOnClickListener(this);
         edit_script = (EditText) findViewById(R.id.edit_script);
         edit_script.setOnClickListener(this);
+        edit_script_index = (EditText) findViewById(R.id.edit_script_index);
+        edit_script_index.setOnClickListener(this);
+        btn_exec_script = (Button) findViewById(R.id.btn_exec_script);
+        btn_exec_script.setOnClickListener(this);
     }
 
     @Override
@@ -174,6 +180,9 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_servo_walk:
                 submit();
+                break;
+            case R.id.btn_exec_script:
+                execScript();
                 break;
         }
         if (data != null) {
@@ -336,6 +345,18 @@ public class TacoActivity extends AppCompatActivity implements View.OnClickListe
 
         // TODO validate success, do something
         return script;
+    }
+
+    private void execScript() {
+        // validate
+        String index = edit_script_index.getText().toString().trim();
+        if (TextUtils.isEmpty(index)) {
+            Toast.makeText(this, "0-10", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int i = Integer.parseInt(index);
+        mController.sendMsg(IronbotCode.create(TuckMessageUtils.createExceScript((byte) i)), null);
     }
 
     private class TacoReceiver extends IronbotStatus {

@@ -173,10 +173,14 @@ public class TuckMessageUtils {
     /**
      * 行走电机
      * @param side 0/1 左右电机
-     * @param action 0/1 行走/停止
+     * @param action 0/1/2/3 前进/后退/停止/惯性滑动
      * @return 啦啦啦
      */
     public static byte[] createServoWalk(byte side, byte action) {
         return createCMD(BLEConstant.CMD_SERVO_WALK, new byte[]{ side}, new byte[]{action});
+    }
+
+    public static byte[] createExceScript(byte index) {
+        return createCMD(BLEConstant.CMD_EXCE_SCRIPT, new byte[]{ index });
     }
 }

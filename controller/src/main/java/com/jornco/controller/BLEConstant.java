@@ -24,6 +24,6 @@ public class BLEConstant {
     public static final byte CMD_CLEAR_SCRIPT = 0X0a;
     public static final byte CMD_DOWNLOAD_TMP_SCRIPT= 0X0b;
     public static final byte CMD_CONTROL_UPGRADE = 0X0c;
-    public static final byte CMD_VOICE_PLAY = 0X0d;
+    public static final byte CMD_EXCE_SCRIPT = 0X0d;
     public static final byte CMD_SERVO_WALK = 0x0e;
 }
