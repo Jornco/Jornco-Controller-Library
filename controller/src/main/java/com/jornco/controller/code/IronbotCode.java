@@ -13,6 +13,7 @@ import java.util.List;
 public class IronbotCode {
 
     private List<byte[]> codes = new ArrayList<>();
+    private byte[] code;
     private String data = "";
 
     public String getData() {
@@ -23,9 +24,14 @@ public class IronbotCode {
         return codes;
     }
 
+    public byte[] getCode() {
+        return code;
+    }
+
     public static IronbotCode create(String code) {
         IronbotCode ironbotCode = new IronbotCode();
         ironbotCode.data = code;
+        ironbotCode.code = code.getBytes();
         ironbotCode.codes = split(code);
         return ironbotCode;
     }
@@ -34,6 +40,7 @@ public class IronbotCode {
         IronbotCode ironbotCode = new IronbotCode();
         ironbotCode.data = new String(code);
         ironbotCode.codes = split(code);
+        ironbotCode.code = code;
         return ironbotCode;
     }
 

@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         put("监听距离", ListenActivity.class);
         put("蓝牙更新", UpdateActivity.class);
         put("设置", SettingsActivity.class);
+        put("塔克测试", TacoActivity.class);
     }};
 
     @Override
