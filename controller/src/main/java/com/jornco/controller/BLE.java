@@ -13,9 +13,12 @@ import com.jornco.controller.ble.BLEState;
 import com.jornco.controller.ble.IronbotRule;
 import com.jornco.controller.ble.IronbotWriterCallback;
 import com.jornco.controller.ble.OnBLEDeviceChangeListener;
+import com.jornco.controller.receiver.BaseBLEResolver;
+import com.jornco.controller.receiver.TuckBLEResolver;
 import com.jornco.controller.util.BLELog;
 import com.jornco.controller.util.Helper;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,8 +57,8 @@ class BLE extends BluetoothGattCallback {
     // 当前的读写处理
     private IWriterStrategy mCurrentStrategy;
 
-    // 当前蓝牙返回的临时拼接值
-    private String mTmpMsg = "";
+    // 处理蓝牙返回的值, 拼接得到一个完整的值, 再进行处理
+    private BaseBLEResolver mBaseBLEResolver = new TuckBLEResolver();
 
     BLE(String address, String name, BluetoothDevice device, IronbotRule rule) {
         this.address = address;
@@ -139,20 +142,20 @@ class BLE extends BluetoothGattCallback {
         super.onCharacteristicChanged(gatt, characteristic);
         // todo: 在这里做接受的传感器返回信息拼接, 因为可能是分段传回来的
         byte[] bytes = mReadBGC.getValue();
-        String msg = new String(bytes);
-        BLELog.log("收到设备传来的: " + msg);
-        String tmp;
+//        String msg = new String(bytes);
+//        BLELog.log("收到设备传来的: " + msg);
+        // 这里应该直接去处理字节数组了, 不能变成字符串再去处理
+        byte[] tmp;
         synchronized (this) {
-            if (resolve(msg)) {
-                tmp = this.mTmpMsg;
-                // 记得清空
-                clearMsg();
+            if (mBaseBLEResolver.resolve(bytes)) {
+                tmp = mBaseBLEResolver.getData();
+                mBaseBLEResolver.clear();
             } else {
                 return;
             }
         }
         mDeviceStateChangeListener.bleDeviceReceive(address, tmp);
-        BLELog.log("接受到的信息拼接完成后: " + tmp);
+        BLELog.log("接受到的信息拼接完成后: " + Arrays.toString(tmp));
     }
 
     @Override
@@ -243,24 +246,6 @@ class BLE extends BluetoothGattCallback {
         mDeviceStateChangeListener.bleDeviceStateChange(address, state);
     }
 
-    private boolean resolve(String msg) {
-        msg = msg.trim();
-        if (this.mTmpMsg.length() == 0 && !msg.startsWith("#") && !msg.startsWith("$")) {
-            // 普通的A B 返回
-            this.mTmpMsg = msg;
-            return true;
-        } else {
-            this.mTmpMsg += msg;
-            if (msg.endsWith("*")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void clearMsg() {
-        mTmpMsg = "";
-    }
 }
 
 

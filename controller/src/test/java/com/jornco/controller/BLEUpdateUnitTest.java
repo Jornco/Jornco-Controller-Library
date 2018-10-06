@@ -174,7 +174,7 @@ public class BLEUpdateUnitTest {
     }
 
     private BLEMessage createMessage(String msg) {
-        return mFactory.createBLEMessage("test", msg, null);
+        return mFactory.createBLEMessage("test", msg.getBytes());
     }
 
     private byte[] createTestBin() {

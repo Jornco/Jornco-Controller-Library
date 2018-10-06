@@ -1,0 +1,102 @@
+!!
+local ClorTpId = "001";
+local UltrTpId = "002";
+local TraceTpId = "003";
+local BtnTpId = "004";
+local THTpId = "005";
+local LightTpId = "006";
+local SoundTpId = "007";
+local InfraTpId = "008";
+
+local RgbTpId = "101";
+local LedsTpId = "102";
+local BeeTpId = "103";
+local DigTubeTpId = "104"
+
+local cType_e ="E";
+local cType_k ="K";
+local cType_m ="M";
+
+print("online\r\n");
+while 1 do
+  local com  = readArray();
+  if com ~= "" then
+    local ht = Lu_strok(com,0);
+
+	if ht == cType_m then
+	  print("online\r\n")
+	end
+
+	if ht == cType_e then
+	  local st = Lu_strok(com, 1);
+	  if st == RgbTpId then
+	    local sp = Lu_strok(com, 2);
+	    local r = Lu_strok(com, 3);
+	    local g = Lu_strok(com, 4);
+	    local b = Lu_strok(com, 5);
+	    LED(sp,r,g,b);
+	  end
+
+	  if st == LedsTpId then
+
+	  end
+
+	  if st == BeeTpId then
+	    local sp = Lu_strok(com, 2);
+		local spa = Lu_strok(com, 3);
+		Bee(sp,spa);
+	  end
+
+	  if st == DigTubeTpId then
+	    local sp = Lu_strok(com, 2);
+		local spa = Lu_strok(com, 3);
+		tube_all(sp,spa);
+	  end
+
+	end
+
+	if ht == cType_k then
+	  local st = Lu_strok(com, 1);
+	  local sp = Lu_strok(com, 2);
+
+	  if st == ClorTpId then
+        rgbinit(sp);
+	    print("#K,"..st..","..sp..","..R_value(sp)..","..G_value(sp)..","..B_value(sp)..",*\r\n");
+	  end
+
+	  if st == UltrTpId then
+	  	print("#K,"..st..","..sp..","..readUltra(sp)..",*\r\n");
+	  end
+
+	  if st == TraceTpId then
+	  	print("#K,"..st..","..sp..","..readPatrol(sp,1)..","..readPatrol(sp,2)..",*\r\n");
+	  end
+
+      if st == BtnTpId then
+	    print("#K,"..st..","..sp..","..Key(sp)..",*\r\n");
+	  end
+
+	  if st == THTpId then
+	    print("#K,"..st..","..sp..","..readTemp(sp)..","..readHumi(sp)..",*\r\n");
+	  end
+
+	  if st == LightTpId then
+        lightadcInit(sp);
+		print("#K,"..st..","..sp..","..readLight()..",*\r\n");
+	  end
+
+	  if st == SoundTpId then
+		voiceinit();
+		print("#K,"..st..","..sp..","..readVoice(sp)..",*\r\n");
+	  end
+
+	  if st == InfraTpId then
+        irinit();
+	    print("#K,"..st..","..sp..","..readIrKey()..",*\r\n");
+	  end
+	end
+  end
+  playAction();
+  Delayms(10);
+end
+!!

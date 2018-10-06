@@ -2,6 +2,8 @@ package com.jornco.controller.receiver;
 
 import com.jornco.controller.ble.SensorType;
 
+import java.util.Arrays;
+
 /**
  * 接受到设备传出来的信息
  * Created by kkopite on 2017/10/26.
@@ -9,11 +11,19 @@ import com.jornco.controller.ble.SensorType;
 
 public class BLEMessage {
 
+    // 地址
     private final String address;
-    private final String msg;
+    // 接受的数据
+    private final byte[] msg;
+    // 塔克返回的值, 出现错误
+    private String errorMsg = "";
 
     private SensorType mType;
     private int port;
+    private String[] recData;
+
+    // 从返回的数据中分析出来的长度, 与msg的长度去做比较
+    private int mPackageLen;
 
     public SensorType getType() {
         return mType;
@@ -22,8 +32,6 @@ public class BLEMessage {
     public void setType(SensorType type) {
         mType = type;
     }
-
-    private String[] recData;
 
 
     public int getPort() {
@@ -42,13 +50,9 @@ public class BLEMessage {
         this.recData = recData;
     }
 
-    public BLEMessage(String address, String msg) {
+    public BLEMessage(String address, byte[] msg) {
         this.address = address;
         this.msg = msg;
-    }
-
-    public String getMsg() {
-        return msg;
     }
 
     public String getAddress() {
@@ -56,11 +60,42 @@ public class BLEMessage {
         return address;
     }
 
+    public byte[] getMsg() {
+        return msg;
+    }
+
+    // 获取cmd type
+    public byte getCMDType() {
+        if (msg != null && msg.length >= 10) {
+            return msg[5];
+        }
+        return 0;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
     @Override
     public String toString() {
         return "BLEMessage{" +
                 "address='" + address + '\'' +
-                ", msg='" + msg + '\'' +
+                ", msg='" + Arrays.toString(msg) + '\'' +
+                ", recData=" + Arrays.toString(recData) +
                 '}';
     }
+
+    public void setPackageLen(int packageLen) {
+        mPackageLen = packageLen;
+    }
+
+    public int getPackageLen() {
+        return mPackageLen;
+    }
+
+
 }

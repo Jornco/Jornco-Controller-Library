@@ -12,6 +12,7 @@ import com.jornco.controller.receiver.BLEMessage;
 import com.jornco.controller.util.BLELog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -80,7 +81,7 @@ public class DataReceiverAdapter extends BaseAdapter {
 
         @Override
         public boolean onReceiveBLEMessage(BLEMessage message) {
-            data.add(message.getMsg());
+            data.add(Arrays.toString(message.getMsg()));
             BLELog.log(message.getMsg() + "收到");
             mContext.runOnUiThread(new Runnable() {
                 @Override

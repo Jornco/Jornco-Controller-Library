@@ -120,7 +120,7 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
      * @param info 蓝牙设备
      */
     void disConnect(String info){
-        BLE device = mConnectedBLE.remove(info);
+        BLE device = mConnectedBLE.get(info);
         if (device == null) {
             for (OnBLEDeviceStatusChangeListener mDeviceStatusChangeListener : mDeviceStatusChangeListeners) {
                 mDeviceStatusChangeListener.bleDeviceStateChange(info, BLEState.DISCONNECT);
@@ -166,9 +166,10 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     }
 
     @Override
-    public void bleDeviceReceive(String address, String msg) {
+    public void bleDeviceReceive(String address, byte[] msg) {
 //        BLEMessage message = new BLEMessage(address, msg);
-        BLEMessage message = mFactory.createBLEMessage(address, msg, mSensorTypeMap);
+//        BLEMessage message = mFactory.createBLEMessage(address, msg, mSensorTypeMap);
+        BLEMessage message = mFactory.createTuckBLEMessage(address, msg);
         // 在这里组合出接收到的信息, 发出去
         for (BLEReceiver mReceiver : mReceivers) {
             if (mReceiver.onReceiveBLEMessage(message)) {
@@ -377,6 +378,9 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
     public void bleDeviceStateChange(String address, BLEState state) {
         for (OnBLEDeviceStatusChangeListener mDeviceStatusChangeListener : mDeviceStatusChangeListeners) {
             mDeviceStatusChangeListener.bleDeviceStateChange(address, state);
+        }
+        if (state == BLEState.DISCONNECT) {
+           mConnectedBLE.remove(address);
         }
     }
 }

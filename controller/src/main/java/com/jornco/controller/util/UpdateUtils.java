@@ -84,4 +84,16 @@ public class UpdateUtils {
         }
         return codes;
     }
+
+    public static byte[][] splitWithLen(byte[] data, int size) {
+        int length = data.length;
+        int len = (int) Math.ceil((double)length / size);
+        byte[][] result = new byte[len][];
+        for (int i = 0; i < len; i++) {
+            int from = size * i;
+            int to = Math.min(length, (i + 1) * size);
+            result[i] = Arrays.copyOfRange(data, from, to);
+        }
+        return result;
+    }
 }
