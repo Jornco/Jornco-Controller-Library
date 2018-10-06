@@ -4,6 +4,8 @@ import com.jornco.controller.receiver.BLEMessage;
 import com.jornco.controller.receiver.BLEReceiver;
 import com.jornco.controller.util.BLELog;
 
+import java.util.Arrays;
+
 /**
  * 状态管理类
  * Created by kkopite on 2017/10/26.
@@ -32,6 +34,6 @@ public class IronbotStatus implements BLEReceiver {
 
     @Override
     public void handBLEMessage(BLEMessage message) {
-        BLELog.log("收到信息: " + message.getMsg());
+        BLELog.log("收到信息: " + Arrays.toString(message.getMsg()));
     }
 }

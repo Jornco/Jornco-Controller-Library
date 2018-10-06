@@ -19,5 +19,5 @@ public interface OnBLEDeviceChangeListener {
      * @param address 地址
      * @param msg     信息
      */
-    void bleDeviceReceive(String address, String msg);
+    void bleDeviceReceive(String address, byte[] msg);
 }

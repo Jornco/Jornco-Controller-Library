@@ -47,7 +47,13 @@
             android:name=".activity.ListenActivity"
             android:parentActivityName=".MainActivity">
         </activity>
-        <activity android:name=".UpdateActivity">
+        <activity
+            android:name=".UpdateActivity"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
+            android:name=".TacoActivity"
+            android:parentActivityName=".MainActivity">
         </activity>
     </application>
 

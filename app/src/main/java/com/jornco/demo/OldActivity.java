@@ -22,6 +22,7 @@ import com.jornco.controller.util.BLELog;
 import com.jornco.controller.util.RobotUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class OldActivity extends AppCompatActivity implements View.OnClickListener, OnIronbotWriteCallback{
@@ -202,7 +203,7 @@ public class OldActivity extends AppCompatActivity implements View.OnClickListen
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mRecData.setText(message.getMsg());
+                    mRecData.setText(Arrays.toString(message.getMsg()));
                 }
             });
             return true;
