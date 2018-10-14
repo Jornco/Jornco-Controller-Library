@@ -56,8 +56,11 @@ class BLEPool implements OnBLEDeviceChangeListener, MultiIronbotWriterCallback.O
         final static String VERSION1_UUID_WRITER = "0000ffe9";
         final static String VERSION1_UUID_READ = "0000ffe1";
 
-        final static String VERSION2_UUID_WRITER = "0000fff1";
-        final static String VERSION2_UUID_READ = "0000fff4";
+//        final static String VERSION2_UUID_WRITER = "0000fff1";
+//        final static String VERSION2_UUID_READ = "0000fff4";
+
+        final static String VERSION2_UUID_WRITER = "0000ff02";
+        final static String VERSION2_UUID_READ = "0000ff01";
 
         @Override
         public boolean isRead(String uuid) {

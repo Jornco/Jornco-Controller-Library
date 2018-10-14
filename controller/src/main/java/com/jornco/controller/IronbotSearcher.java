@@ -24,9 +24,13 @@ public class IronbotSearcher{
     private IronbotFilter mFilter = new IronbotFilter() {
         @Override
         public boolean filter(String name) {
-            return name != null && (name.equals("RS-BLE") || name.equals("PS-BLE") || name.startsWith("TAv") || name.startsWith("CC"));
+            return name != null && (name.equals("RS-BLE") || name.equals("PS-BLE") || name.startsWith("TAv") || name.startsWith("CC") || name.equals("Taco_Data"));
         }
     };
+
+    public void setFilter(IronbotFilter filter) {
+        mFilter = filter;
+    }
 
     public void setRule(IronbotRule rule) {
         BLEPool.getInstance().setRule(rule);

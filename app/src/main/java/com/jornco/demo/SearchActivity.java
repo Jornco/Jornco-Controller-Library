@@ -8,12 +8,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.jornco.controller.util.BLELog;
-import com.jornco.controller.ble.IronbotInfo;
 import com.jornco.controller.IronbotSearcher;
 import com.jornco.controller.IronbotStatus;
+import com.jornco.controller.ble.IronbotInfo;
 import com.jornco.controller.receiver.BLEMessage;
 import com.jornco.controller.scan.IronbotSearcherCallback;
+import com.jornco.controller.util.BLELog;
 import com.jornco.demo.adapter.RobotInfoAdapter;
 
 import java.util.List;
